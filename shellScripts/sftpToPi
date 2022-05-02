@@ -1,0 +1,30 @@
+#! /bin/bash
+
+###
+# Transfer code files via sftp to the Pi and automatically compile/run them. Goal is to automate coding
+# on my local machine and running on the Pi
+#
+# author: urban
+###
+
+# Variables
+remotePath="/home/mr/mrProj2/src/"
+
+echo -e "File to be transferred : "
+read -e file
+
+localFile=$(realpath $file)
+remoteFile=$remotePath$file
+
+sftp pi <<EOT
+put $localFile $remotePath
+chmod 744 $remoteFile #make executable
+bye
+EOT
+
+clear
+
+ssh -T pi <<EOT # suppress warning no console connection via this script
+$remoteFile
+exit
+EOT
