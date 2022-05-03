@@ -19,6 +19,7 @@
 
 # Variables
 remotePath="/home/mr/mrProj2/src/"
+execPath="/home/mr/mrProj2/exec/"
 
 #echo -e "File to be transferred : "
 #read -e file
@@ -30,13 +31,16 @@ remoteFile=$remotePath$file
 
 sftp pi <<EOT
 put $localFile $remotePath
-chmod 744 $remoteFile #make executable
+#chmod 744 $execPath$executable #make executable
 bye
 EOT
 
 clear
 
+executable=${file%.*} # executable name = filename without .extension
+
 ssh -T pi <<EOT # suppress warning no console connection via this script
-$remoteFile
+gcc -Wall -o $execPath$executable $remoteFile -lpigpio
+#echo "ros_ru" | sudo -S $execPath$executable
 exit
 EOT
