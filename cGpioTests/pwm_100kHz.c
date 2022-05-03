@@ -1,6 +1,7 @@
 /**
-* Demo program, minimal implementation of a servo with pigpio.
-* Sweeping from MINPULSE to MAXPULSE
+* Demo program, minimal implementation of pwm for motor, <100kHz.
+* Using Hardware PWM
+* Sweeping from 0 to 100%
 *
 * @author urban
 */
@@ -11,10 +12,10 @@
 #include <pigpio.h>
 
 // Hardware timed on BCM pins 0-31
-// Full hardware BCM 12, 18 channel 0 / BCM 13,19 channel 1
-#define PIN 25 // BCM pin
-#define MINPULSE 1000
-#define MAXPULSE 2000
+#define PIN 12 // BCM pin
+#define PWMFREQ 95000
+#define MINPULSE 0
+#define MAXPULSE 1000000 // 1 million
 
 int run = 1;
 
@@ -37,12 +38,18 @@ int main(int argc, char *argv[])
 	
 	int pulse = MINPULSE;
 	int up = 1;
+	int ret = 0;
 	
 	while(run)
 	{
-		gpioServo(PIN, pulse);
+		ret = gpioHardwarePWM(PIN, PWMFREQ, pulse);
+		if( ret != 0)
+		{
+			printf("Hardware-PWM failed, error code : %i", ret);
+			run = 0;
+		}
 		
-		pulse += up * 5;
+		pulse += up * 5000;
 		if(pulse > MAXPULSE)
 		{
 			pulse = MAXPULSE;
@@ -58,9 +65,8 @@ int main(int argc, char *argv[])
 		//printf("%i", pulse);
 	}
 	
-	gpioServo(PIN, 0);
+	gpioHardwarePWM(PIN, PWMFREQ, 0);
 	gpioTerminate();
 
 	return 0;
 }
-
