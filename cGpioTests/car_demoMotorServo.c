@@ -14,8 +14,8 @@
 
 // Hardware timed on BCM pins 0-31
 #define PIN_PWM_MOTOR 12 // BCM pin
-#define PIN_A_MOTOR 7
-#define PIN_B_MOTOR 8
+#define PIN_A_MOTOR 7 // forwards : A=0, B=1
+#define PIN_B_MOTOR 8 
 #define PWMFREQ_MOTOR 95000
 #define MINPULSE_MOTOR 0
 #define MAXPULSE_MOTOR 1000000 // 1 million
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	gpioSetMode(PIN_B_MOTOR, PI_OUTPUT);
 	
 	gpioWrite(PIN_A_MOTOR, 1);
-	gpioWrite(PIN_B_MOTOR, 0);
+	gpioWrite(PIN_B_MOTOR, 0); // A=1, B=0 is backwards
 	
 	int ret = 0; // return value gpio PWM functions
 	
@@ -70,33 +70,12 @@ int main(int argc, char *argv[])
 		}
 		
 		pulse_s += up_s * 5;
-		if(pulse_s > MAXPULSE_SERVO)
+		if(pulse_s >= MAXPULSE_SERVO)
 		{
 			pulse_s = MAXPULSE_SERVO;
 			up_s = -1;
-			if(state_m == -1)
-			{
-			gpioWrite(PIN_A_MOTOR, 0);
-			gpioWrite(PIN_B_MOTOR, 0);
-			state_m = 0;
-			continue;
-			}
-			if(state_m == 0)
-			{
-			gpioWrite(PIN_A_MOTOR, 0);
-			gpioWrite(PIN_B_MOTOR, 1);
-			state_m = 1;
-			continue;
-			}
-			if(state_m == 1)
-			{
-			gpioWrite(PIN_A_MOTOR, 1);
-			gpioWrite(PIN_B_MOTOR, 0);
-			state_m = -1;
-			continue;
-			}
 		}
-		if(pulse_s < MINPULSE_SERVO)
+		if(pulse_s <= MINPULSE_SERVO)
 		{
 			pulse_s = MINPULSE_SERVO;
 			up_s = 1;
@@ -111,15 +90,40 @@ int main(int argc, char *argv[])
 		}
 		
 		pulse_m += up_m * 5000;
-		if(pulse_m > MAXPULSE_MOTOR)
+		if(pulse_m >= MAXPULSE_MOTOR)
 		{
 			pulse_m = MAXPULSE_MOTOR;
 			up_m = -1;
 		}
-		if(pulse_m < MINPULSE_MOTOR)
+		if(pulse_m <= MINPULSE_MOTOR)
 		{
 			pulse_m = MINPULSE_MOTOR;
 			up_m = 1;
+			
+			if(state_m == -1)
+			{
+			gpioWrite(PIN_A_MOTOR, 0);
+			gpioWrite(PIN_B_MOTOR, 0);
+			state_m = 0;
+			printf("Changed to state 0\n");
+			continue;
+			}
+			if(state_m == 0)
+			{
+			gpioWrite(PIN_A_MOTOR, 0);
+			gpioWrite(PIN_B_MOTOR, 1);
+			state_m = 1;
+			printf("Changed to state 1\n");
+			continue;
+			}
+			if(state_m == 1)
+			{
+			gpioWrite(PIN_A_MOTOR, 1);
+			gpioWrite(PIN_B_MOTOR, 0);
+			state_m = -1;
+			printf("Changed to state -1\n");
+			continue;
+			}
 		}
 		
 		time_sleep(0.01); // 50 Hz needed is made by gpioServo, not sleep
