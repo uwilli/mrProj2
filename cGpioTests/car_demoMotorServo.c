@@ -49,6 +49,13 @@ int main(int argc, char *argv[])
 	
 	int pulse_m = MINPULSE_MOTOR;
 	int up_m = 1;
+	int state_m = -1;
+	
+	gpioSetMode(PIN_A_MOTOR, PI_OUTPUT);
+	gpioSetMode(PIN_B_MOTOR, PI_OUTPUT);
+	
+	gpioWrite(PIN_A_MOTOR, 1);
+	gpioWrite(PIN_B_MOTOR, 0);
 	
 	int ret = 0; // return value gpio PWM functions
 	
@@ -67,6 +74,27 @@ int main(int argc, char *argv[])
 		{
 			pulse_s = MAXPULSE_SERVO;
 			up_s = -1;
+			if(state_m == -1)
+			{
+			gpioWrite(PIN_A_MOTOR, 0);
+			gpioWrite(PIN_B_MOTOR, 0);
+			state_m = 0;
+			continue;
+			}
+			if(state_m == 0)
+			{
+			gpioWrite(PIN_A_MOTOR, 0);
+			gpioWrite(PIN_B_MOTOR, 1);
+			state_m = 1;
+			continue;
+			}
+			if(state_m == 1)
+			{
+			gpioWrite(PIN_A_MOTOR, 1);
+			gpioWrite(PIN_B_MOTOR, 0);
+			state_m = -1;
+			continue;
+			}
 		}
 		if(pulse_s < MINPULSE_SERVO)
 		{
@@ -100,6 +128,9 @@ int main(int argc, char *argv[])
 	
 	gpioServo(PIN_SERVO, 0);
 	gpioHardwarePWM(PIN_PWM_MOTOR, 0, 0);
+	gpioWrite(PIN_A_MOTOR, 0);
+	gpioWrite(PIN_B_MOTOR, 0);
+			
 	gpioTerminate();
 
 	return 0;
