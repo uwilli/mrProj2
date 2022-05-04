@@ -14,8 +14,8 @@
 
 // Hardware timed on BCM pins 0-31
 #define PIN_PWM_MOTOR 12 // BCM pin
-#define PIN_A_MOTOR 7 // forwards : A=0, B=1
-#define PIN_B_MOTOR 8 
+#define PIN_A_MOTOR 16 // forwards : A=0, B=1
+#define PIN_B_MOTOR 25
 #define PWMFREQ_MOTOR 95000
 #define MINPULSE_MOTOR 0
 #define MAXPULSE_MOTOR 1000000 // 1 million
