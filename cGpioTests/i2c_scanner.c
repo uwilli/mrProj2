@@ -8,10 +8,13 @@
 #include <signal.h>
 #include "pigpio.h"
 
+/*
+// Defined directly in raspi when activating i2c
 #define PIN_SDA 2
 #define PIN_SCL 3
 #define I2C_BUS 1
 #define I2C_FREQ 400000
+*/
 
 int main()
 {
