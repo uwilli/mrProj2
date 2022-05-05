@@ -1,0 +1,68 @@
+#! /bin/bash
+
+###
+# Transfer code files via sftp to the Pi and automatically compile/run them. Goal is to automate coding
+# on my local machine and running on the Pi
+#
+# Added with sudo visudo /etc/sudoers a line :
+# mr	ALL=(root) NOPASSWD: /home/mr/mrProj2/exec/*
+#
+# Added as function to my zsh shell, function name run $1=file
+# #~/.zsh/.zshrc : fpath+=/Users/urban/.zsh/.zsh_functions
+# #autoload run
+# function definition in .zsh_functions: file run, content:
+# function run {
+# readonly file=${1:?"The file must be specified."}
+# readonly isClass=$2
+#
+# /Users/urban/Documents/MobileRobotics/4Semester/_Skripte/ROS/mrProj2/shellScripts/sftpToPi_run $file $2
+# }
+#
+# author: urban
+###
+
+# Variables
+remotePath="/home/mr/mrProj2/src/"
+execPath="/home/mr/mrProj2/exec/"
+
+file=$1
+isClass=$2
+
+localFile=$(realpath $file)
+remoteFile=$remotePath$file
+
+if [[ $file != *"."* ]]
+then
+	isClass=c
+fi
+
+# if positional argument class is c for class, copy .cpp and .h file to pi but do not compile
+if [ $isClass = c ]
+then
+	localClassname=${localFile%.*}
+	
+	scp $localClassname.h pi:$remotePath
+	scp $localClassname.cpp pi:$remotePath
+
+# else run normal program
+else
+	scp $localFile pi:$remotePath
+	
+	executable=${file%.*} # executable name = filename without .extension
+	extension=${file#*.}
+	
+	clear
+
+	if [ $extension = c ]
+	then
+		# note the double quotation marks, with single variables not evaluated before sending.
+		ssh pi "gcc -Wall -o $execPath$executable $remoteFile -lpigpio"
+		ssh pi "sudo $execPath$executable"
+	fi
+
+	if [ $extension = cpp ]
+	then
+		ssh pi "g++ -o $execPath$executable $remoteFile -lpigpio"
+		ssh pi "sudo $execPath$executable"
+	fi
+fi
