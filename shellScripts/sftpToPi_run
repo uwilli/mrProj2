@@ -62,7 +62,7 @@ else
 
 	if [ $extension = cpp ]
 	then
-		ssh pi "g++ -o $execPath$executable $remoteFile -lpigpio"
+		ssh pi "g++ -Wall -Wextra -o $execPath$executable $remoteFile -lpigpio"
 		ssh pi "sudo $execPath$executable"
 	fi
 fi
