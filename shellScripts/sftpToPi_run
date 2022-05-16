@@ -5,7 +5,7 @@
 # on my local machine and running on the Pi
 #
 # Added with sudo visudo /etc/sudoers a line :
-# mr	ALL=(root) NOPASSWD: /home/mr/mrProj2/exec/*
+# mr	ALL=(root) NOPASSWD: /home/mr/mrProj2/build/*
 #
 # Added as function to my zsh shell, function name run $1=file
 # #~/.zsh/.zshrc : fpath+=/Users/urban/.zsh/.zsh_functions
@@ -22,16 +22,16 @@
 ###
 
 # Variables
-remotePath="/home/mr/mrProj2/src/"
-execPath="/home/mr/mrProj2/exec/"
+remotePath="/home/mr/mrProj2/source/"
+execPath="/home/mr/mrProj2/build/"
 
 file=$1
 isClass=$2
 
 localFile=$(realpath $file)
-remoteFile=$remotePath$file
+remoteFile=$remotePath/src/$file
 
-if [[ $file != *"."* ]]
+if [[ $file != *"."* ]] # contains no point
 then
 	isClass=c
 fi
@@ -41,12 +41,12 @@ if [ $isClass = c ]
 then
 	localClassname=${localFile%.*}
 	
-	scp $localClassname.h pi:$remotePath
-	scp $localClassname.cpp pi:$remotePath
+	scp $localClassname.h pi:$remotePath/inc
+	scp $localClassname.cpp pi:$remotePath/src
 
 # else run normal program
 else
-	scp $localFile pi:$remotePath
+	scp $localFile pi:$remotePath/src
 	
 	executable=${file%.*} # executable name = filename without .extension
 	extension=${file#*.}
