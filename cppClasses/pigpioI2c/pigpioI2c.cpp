@@ -30,14 +30,14 @@ void PigpioI2c::initialise()
     if(i2cWriteByte(i2cHandle, 0) < 0)
     {
         std::stringstream ssHex;
-        ssHex << std::hex << std::uppercase << i2cAddr_;
+        ssHex << "0x" << std::hex << std::uppercase << static_cast<unsigned>(i2cAddr_); // otherwise unsigned char as ascii character
 
         std::cout << "No device found at address : " << ssHex.str() << std::endl;
     }
     else
     {
         i2cHandle_ = i2cHandle;
-        std::cout << "Device is here and working" << std::endl;
+        std::cout << "Device is here and working." << std::endl;
     }
 }
 
