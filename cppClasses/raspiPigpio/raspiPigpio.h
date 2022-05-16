@@ -11,7 +11,6 @@
 class RaspiPigpio
 {
 public:
-    RaspiPigpio();
     void initialise();
 };
 
