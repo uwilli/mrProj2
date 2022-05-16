@@ -24,6 +24,7 @@
 # Variables
 remotePath="/home/mr/mrProj2/source/"
 execPath="/home/mr/mrProj2/build/"
+execName="temp_dev"
 
 file=$1
 isClass=$2
@@ -37,7 +38,7 @@ then
 fi
 
 # if positional argument class is c for class, copy .cpp and .h file to pi but do not compile
-if [ $isClass = c ]
+if [ "$isClass" == "c" ]
 then
 	localClassname=${localFile%.*}
 	
@@ -49,15 +50,18 @@ else
 	executable=${file%.*} # executable name = filename without .extension
 	extension=${file#*.}
 	
-	if [ $extension = cmake ]
+	if [ "$extension" == "cmake" ]
 	then
 		scp $localFile pi:$remotePath/CMakeLists.txt # Change name of destination file
+		ssh pi "cd $execPath && cmake ../source && make"
+		echo "===========================Runtime=============================="
+		ssh pi "sudo $execPath$execName"
 		exit
 	fi
 	
 	scp $localFile pi:$remotePath/src
 
-	if [ $extension = c ]
+	if [ "$extension" == "c" ]
 	then
 		clear
 		# note the double quotation marks, with single variables not evaluated before sending.
@@ -65,10 +69,11 @@ else
 		ssh pi "sudo $execPath$executable"
 	fi
 
-	if [ $extension = cpp ]
+	if [ "$extension" == "cpp" ]
 	then
-		clear
-		ssh pi "g++ -Wall -Wextra -o $execPath$executable $remoteFile -lpigpio"
-		ssh pi "sudo $execPath$executable"
+		echo "run makefile to build and execute program."
+		#clear
+		#ssh pi "g++ -Wall -Wextra -o $execPath$executable $remoteFile -lpigpio"
+		#ssh pi "sudo $execPath$executable"
 	fi	
 fi
