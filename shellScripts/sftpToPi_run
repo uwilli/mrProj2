@@ -46,15 +46,20 @@ then
 
 # else run normal program
 else
-	scp $localFile pi:$remotePath/src
-	
 	executable=${file%.*} # executable name = filename without .extension
 	extension=${file#*.}
 	
-	clear
+	if [ $extension = cmake ]
+	then
+		scp $localFile pi:$remotePath/CMakeLists.txt # Change name of destination file
+		exit
+	fi
+	
+	scp $localFile pi:$remotePath/src
 
 	if [ $extension = c ]
 	then
+		clear
 		# note the double quotation marks, with single variables not evaluated before sending.
 		ssh pi "gcc -Wall -o $execPath$executable $remoteFile -lpigpio"
 		ssh pi "sudo $execPath$executable"
@@ -62,7 +67,8 @@ else
 
 	if [ $extension = cpp ]
 	then
+		clear
 		ssh pi "g++ -Wall -Wextra -o $execPath$executable $remoteFile -lpigpio"
 		ssh pi "sudo $execPath$executable"
-	fi
+	fi	
 fi
