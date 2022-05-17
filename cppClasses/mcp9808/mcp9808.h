@@ -17,6 +17,7 @@ public:
     Mcp9808(unsigned char i2cAddr, unsigned char i2cBus) : PigpioI2c(i2cAddr, i2cBus) {};
     void initialise(); // sets sensor to continuous temperature reading, no alerts.
     float readTemperature();
+    float readTemperature(unsigned char decimalPrecision);
     void printConfig();
 
 private:
