@@ -65,7 +65,7 @@ else
 	then
 		clear
 		# note the double quotation marks, with single variables not evaluated before sending.
-		ssh pi "gcc -Wall -o $execPath$executable $remoteFile -lpigpio"
+		ssh pi "gcc -Wall -o $execPath$executable $remoteFile -lpigpio" # sometimes doesn't work, but executing directly on raspi works fine.
 		ssh pi "sudo $execPath$executable"
 	fi
 
