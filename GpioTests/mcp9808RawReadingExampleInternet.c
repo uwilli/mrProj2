@@ -24,6 +24,7 @@ int main()
     while (1)
     {
         int v = i2cReadWordData(sensorHandle, 0x05);
+        printf("v : %i", v);
         int val = ((v << 8) | (v >> 8)) & 0x1FFF;
         if(val > 4095)
         {
