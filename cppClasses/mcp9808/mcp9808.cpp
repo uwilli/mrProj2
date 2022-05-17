@@ -17,8 +17,6 @@ float Mcp9808::readTemperature()
 
     data = i2cReadWordData(i2cHandle_, tempReg_);
 
-    std::cout << "0b" << std::bitset<16>{static_cast<unsigned>(data)} << "       ";
-
     tempVal = ((data << 8) | (data >> 8)) & 0x1FFF;
     if(tempVal > 4095)
     {
@@ -26,9 +24,16 @@ float Mcp9808::readTemperature()
     }
     temperature = tempVal * 0.0625;
 
-    std::cout << temperature << " deg C" << std::endl;
-
     return temperature;
+}
+
+void Mcp9808::printTemperature(unsigned char decimalPlaces)
+{
+    float temperature = readTemperature();
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(decimalPlaces) << temperature;
+
+    std::cout << "Temperature : " << ss.str() << " °C" << std::endl;
 }
 
 void Mcp9808::printConfig()
