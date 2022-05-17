@@ -1,10 +1,29 @@
 #include "raspiPigpio.h"
 
 
+
+int RaspiPigpio::initialised_ = 0;
+
+
+RaspiPigpio::~RaspiPigpio()
+{
+    initialised_ --;
+
+    if(initialised_ < 1)
+    {
+        gpioTerminate();
+        initialised_ = 0;
+    }
+}
+
 void RaspiPigpio::initialise()
 {
-    if(gpioInitialise() < 0)
+    if(initialised_ < 1)
     {
-        throw std::runtime_error("Pigpio gpioInitialise() failed.");
+        if(gpioInitialise() < 0)
+        {
+            throw std::runtime_error("Pigpio gpioInitialise() failed.");
+        }
     }
+    initialised_ ++;
 }

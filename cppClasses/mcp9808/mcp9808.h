@@ -2,6 +2,7 @@
 #define MCP9808_H
 
 #include "pigpioI2c.h"
+#include <bitset>
 
 
 /**
@@ -14,10 +15,18 @@ public:
     Mcp9808() : PigpioI2c(0x18) {}; // standard address for sensor when no address pins connected
     Mcp9808(unsigned char i2cAddr) : PigpioI2c(i2cAddr) {};
     Mcp9808(unsigned char i2cAddr, unsigned char i2cBus) : PigpioI2c(i2cAddr, i2cBus) {};
-    void initialise();
-    void initialise(bool initialiseRaspiPigpio);
+    void initialise(); // sets sensor to continuous temperature reading, no alerts.
+    float readTemperature();
+    void printConfig();
 
 private:
+    // Registers
+    const char configReg_ = 0x01; // Location config register
+    const char tempReg_ = 0x05; // Location temperature register
+    // Config
+    wchar_t configRegData_ = 0x00; // Power-up default, alert disabled
+
+    void pushConfig();
 };
 
 #endif // MCP9808_H
