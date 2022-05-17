@@ -47,7 +47,6 @@ void Mcp9808::printConfig()
 
 void Mcp9808::pushConfig()
 {
-    std::cout << "Config sent : 0b" << std::bitset<16>{static_cast<unsigned>(configRegData_)} << std::endl;
     if(i2cWriteWordData(i2cHandle_, configReg_, configRegData_) < 0)
     {
         throw std::runtime_error("Writing to config register of MCP9808 failed.");
