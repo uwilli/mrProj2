@@ -6,9 +6,21 @@ void Lsm6ds33::initialise()
     PigpioI2c::initialise();
     std::cout << "Gyro and accelerometer found." << std::endl;
 
-    //TODO configurations to sensor
+    pushGyroMaxDPS_();
+    pushGyroFreqMode_();
+    pushAccMaxG_();
+    pushAccFreqMode_();
 }
 
+/**
+ * @brief Sets maximum degrees per second parameter on the gyroscope.
+ * @param gyroMaxDPS: Sets value to nearest possible value:  125 dps
+ *                                                         	 250 dps
+ *                                                      	 500 dps
+ *                                                         	1000 dps
+ *                                                       	2000 dps
+ * @return The value it chose to set the parameter to.
+ */
 unsigned int Lsm6ds33::setGyroMaxDPS(unsigned int gyroMaxDPS)
 {
     switch (gyroMaxDPS) { // implemented as switch, because vector etc would be overkill.
@@ -28,11 +40,85 @@ unsigned int Lsm6ds33::setGyroMaxDPS(unsigned int gyroMaxDPS)
         gyroMaxDPS_ = 2000;
     }
 
-    pushGyroMaxDPS();
+    pushGyroMaxDPS_();
     return gyroMaxDPS_;
 }
 
-void Lsm6ds33::pushGyroMaxDPS()
+/**
+ * @brief Sets data output frequency of Gyroscope.
+ * @param gyroFreqMode: possible values:	0 --> Power Down
+ * 												1 --> 12.5 Hz
+ * 												2 --> 26 Hz
+ * 												3 --> 52 Hz
+ * 												4 --> 104 Hz
+ * 												5 --> 208 Hz
+ * 												6 --> 416 Hz
+ * 												7 --> 833 Hz
+ * 												8 --> 1660 Hz
+ */
+void Lsm6ds33::setGyroFreqMode(unsigned char gyroFreqMode)
+{
+    if(gyroFreqMode > 8)
+    {
+        throw std::invalid_argument("Maximum Gyro Frequency mode is 8 (1660Hz).");
+    }
+    gyroFreqMode_ = gyroFreqMode;
+    pushGyroFreqMode_();
+}
+
+/**
+ * @brief Sets maximum g-Force parameter of accelerometer.
+ * @param accMaxG: Chooses closest possible value :  2 g
+ *                                                   4 g
+ *                                                   8 g
+ *                                                  16 g
+ * @return The value the parameter was actually set to.
+ */
+unsigned char Lsm6ds33::setAccMaxG(unsigned char accMaxG)
+{
+    switch (accMaxG) { // implemented as switch, because vector etc would be overkill.
+    case 0 ... 2:
+        accMaxG_ = 2;
+        break;
+    case 3 ... 5:
+        accMaxG_ = 4;
+        break;
+    case 6 ... 11:
+        accMaxG_ = 8;
+        break;
+    default:
+        accMaxG_ = 16;
+    }
+
+    pushAccMaxG_();
+    return accMaxG_;
+}
+
+/**
+ * @brief Sets accelerometer data output frequency
+ * @param accFreqMode: possible values :  0 --> Power Down
+ *                                        1 --> 12.5
+ *                                        2 --> 26 Hz
+ *                                        3 --> 52 Hz
+ *                                        4 --> 104 Hz
+ *                                        5 --> 208 Hz
+ *                                        6 --> 416 Hz
+ *                                        7 --> 833 Hz
+ *                                        8 --> 1660 Hz
+ *                                        9 --> 3330 Hz
+ *                                       10 --> 6660 Hz
+ */
+void Lsm6ds33::setAccFreqMode(unsigned char accFreqMode)
+{
+    if(accFreqMode > 10)
+    {
+        throw std::invalid_argument("Maximum Accelerometer Frequency mode is 10 (6660Hz).");
+    }
+    accFreqMode_ = accFreqMode;
+    pushAccFreqMode_();
+}
+
+void Lsm6ds33::pushGyroMaxDPS_()
 {
     unsigned char val = 0; // dps value we want to send
     char reg = 0; // data from and to register
@@ -71,3 +157,125 @@ void Lsm6ds33::pushGyroMaxDPS()
         throw std::runtime_error("Could not write to gyroscope setup register.");
     }
 }
+
+void Lsm6ds33::pushGyroFreqMode_()
+{
+    char reg = 0;
+
+    if(gyroFreqMode_ > 8)
+    {
+        throw std::invalid_argument("Gyroscope frequency mode is higher than 8 (max)");
+    }
+
+    reg = i2cReadByteData(i2cHandle_, gyroSetupReg_); // Read register from sensor
+    if(reg < 0)
+    {
+        throw std::runtime_error("Could not read gyroscope setup register.");
+    }
+
+    reg &= 0x0F; // set freq bits to zero
+    reg |= gyroFreqMode_ << 4;
+
+    if(i2cWriteByteData(i2cHandle_, gyroSetupReg_, reg) < 0)
+    {
+        throw std::runtime_error("Could not write to gyroscope setup register.");
+    }
+}
+
+void Lsm6ds33::pushAccMaxG_()
+{
+    unsigned char val = 0;
+    char reg = 0;
+
+    switch (accMaxG_) {
+    case 2:
+        val = 0x00;
+        break;
+    case 4:
+        val = 0x08;
+        break;
+    case 8:
+        val = 0x0C;
+        break;
+    case 16:
+        val = 0x04;
+        break;
+    default:
+        throw std::invalid_argument("max G has an illegal value. Review setter Method guards.");
+    }
+
+    reg = i2cReadByteData(i2cHandle_, accSetupReg_); // Read register from sensor
+    if(reg < 0)
+    {
+        throw std::runtime_error("Could not read accelerometer setup register.");
+    }
+
+    reg &= 0xF3; // set freq bits to zero
+    reg |= val;
+
+    if(i2cWriteByteData(i2cHandle_, gyroSetupReg_, reg) < 0)
+    {
+        throw std::runtime_error("Could not write to accelerometer setup register.");
+    }
+}
+
+void Lsm6ds33::pushAccFreqMode_()
+{
+    char reg = 0;
+
+    if(accFreqMode_ > 10)
+    {
+        throw std::invalid_argument("Accelerometer frequency mode is higher than 10 (max)");
+    }
+
+    reg = i2cReadByteData(i2cHandle_, accSetupReg_); // Read register from sensor
+    if(reg < 0)
+    {
+        throw std::runtime_error("Could not read accelerometer setup register.");
+    }
+
+    reg &= 0x0F; // set freq bits to zero
+    reg |= accFreqMode_ << 4;
+
+    if(i2cWriteByteData(i2cHandle_, accSetupReg_, reg) < 0)
+    {
+        throw std::runtime_error("Could not write to accelerometer setup register.");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

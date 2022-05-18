@@ -13,6 +13,10 @@ public:
     Lsm6ds33() : PigpioI2c(0x6A) {}; //address for gyro and accelerometer
     void initialise();
     unsigned int setGyroMaxDPS(unsigned int gyroMaxDPS); // rounds them to nearest possible value and returns chosen one.
+    void setGyroFreqMode(unsigned char gyroFreqMode);
+    unsigned char setAccMaxG(unsigned char accMaxG);
+    void setAccFreqMode(unsigned char accFreqMode);
+    void getData();
 
 private:
     // Registers
@@ -22,12 +26,21 @@ private:
 
     // Config
     unsigned int gyroMaxDPS_ = 500; // degrees per second
-    unsigned int gyroFreqMode_ = 1; // 12.5Hz
-    unsigned int accFreqMode_ = 1; // 12.5Hz
-    unsigned int accMaxG_ = 4;
+    unsigned char gyroFreqMode_ = 1; // 12.5Hz
+    unsigned char accFreqMode_ = 1; // 12.5Hz
+    unsigned char accMaxG_ = 4;
 
     // Functions
     void pushGyroMaxDPS_();
+    void pushGyroFreqMode_();
+    void pushAccMaxG_();
+    void pushAccFreqMode_();
+
+    // Variables
+    float calib_gx_; // calibration values gyroscope
+    float calib_gy_;
+    float calib_gz_;
+
 
 };
 
