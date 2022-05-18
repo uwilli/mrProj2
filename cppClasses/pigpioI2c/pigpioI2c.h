@@ -4,8 +4,6 @@
 #include "raspiPigpio.h"
 
 #include <iostream>
-#include <sstream>
-#include <string>
 
 /**
  * @brief Implementing pigpio.h c-Library i2c functionality in a cpp class.
@@ -26,7 +24,6 @@ public:
 protected:
     unsigned char i2cBus_ = 1;
     unsigned char i2cAddr_ = 0;
-    std::string i2cAddrHex_ = "";
     unsigned char i2cHandle_ = 0;
 };
 

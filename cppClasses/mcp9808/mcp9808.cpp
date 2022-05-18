@@ -30,10 +30,9 @@ float Mcp9808::readTemperature()
 void Mcp9808::printTemperature(unsigned char decimalPlaces)
 {
     float temperature = readTemperature();
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(decimalPlaces) << temperature;
 
-    std::cout << "Temperature : " << ss.str() << " °C" << std::endl;
+    printf("Temperature : %.*f °C\n", decimalPlaces, temperature);
+    fflush(stdout);
 }
 
 void Mcp9808::printConfig()

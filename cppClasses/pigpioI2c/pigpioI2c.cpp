@@ -55,14 +55,12 @@ void PigpioI2c::initialise()
         throw std::runtime_error("Failed to open i2c communication. (i2cOpen() pigpio)");
     }
 
-    std::stringstream ssHex;
-    ssHex << "0x" << std::hex << std::uppercase << static_cast<unsigned>(i2cAddr_); // otherwise unsigned char as ascii character
-    i2cAddrHex_ = ssHex.str();
-
     if(i2cWriteByte(i2cHandle, 0) < 0)
     {
         i2cClose(i2cHandle);
-        std::cout << "No device found at address : " << i2cAddrHex_ << std::endl;
+        printf("No device found at address : 0x%02X\n", i2cAddr_);
+        fflush(stdout);
+        throw std::runtime_error("No device found at specified i2c-Address.");
     }
     else
     {

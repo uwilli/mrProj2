@@ -10,7 +10,7 @@ int main()
     //sens.printConfig();
     for(int i=0; i<10; i++)
     {
-        sens.printTemperature(2);
+        sens.printTemperature(1);
         sleep(2);
     }
     std::cout << "Reached end of main loop" << std::endl;
