@@ -2,6 +2,7 @@
 #define LSM6DS33_H
 
 #include "pigpioI2c.h"
+#include "vecXYZ.h"
 
 /**
  * @brief The Lsm6ds33 class creates a cpp interface for the gyroscope and magnetic sensor LSM6DS33 for raspberry Pi.
@@ -16,7 +17,7 @@ public:
     void setGyroFreqMode(unsigned char gyroFreqMode);
     unsigned char setAccMaxG(unsigned char accMaxG);
     void setAccFreqMode(unsigned char accFreqMode);
-    void getData();
+    void getData(VecXYZ &gyroData, VecXYZ &accData);
 
 private:
     // Registers
@@ -37,9 +38,7 @@ private:
     void pushAccFreqMode_();
 
     // Variables
-    float calib_gx_; // calibration values gyroscope
-    float calib_gy_;
-    float calib_gz_;
+    VecXYZ calibGyro;
 
 
 };

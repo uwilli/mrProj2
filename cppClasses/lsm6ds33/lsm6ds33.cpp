@@ -118,6 +118,53 @@ void Lsm6ds33::setAccFreqMode(unsigned char accFreqMode)
     pushAccFreqMode_();
 }
 
+/**
+ * @brief Get gyro and acceleration data from sensor.
+ *        Gyro in DPS (degrees per second)
+ *        acceleration in g (9.81m/s^2)
+ * @param &gyroData : gyro data written to this
+ * @param &accData : acceleration data written to this
+ */
+void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
+{
+    const unsigned char bytes = 12;
+    char buf[bytes] = {};
+    int g_x = 0;
+    int g_y = 0;
+    int g_z = 0;
+    int a_x = 0;
+    int a_y = 0;
+    int a_z = 0;
+
+    if(i2cReadI2CBlockData(i2cHandle_, dataReg_, buf, bytes) != bytes)
+    {
+        std::runtime_error("Could not read correct number (if any) of bytes from data register LSM6DS33.");
+    }
+
+    g_x = buf[1];
+    g_y = buf[3];
+    g_z = buf[5];
+    g_x = (static_cast<unsigned int>(g_x) << 8) | buf[0];
+    g_y = (static_cast<unsigned int>(g_y) << 8) | buf[2];
+    g_z = (static_cast<unsigned int>(g_z) << 8) | buf[4];
+
+    a_x = buf[7];
+    a_y = buf[9];
+    a_z = buf[11];
+    a_x = (static_cast<unsigned int>(a_x) << 8) | buf[6];
+    a_y = (static_cast<unsigned int>(a_y) << 8) | buf[8];
+    a_z = (static_cast<unsigned int>(a_z) << 8) | buf[10];
+
+    // divide by 2^15 (16bit is a 2 complement's), multiply by max value
+    gyroData.x = (float) g_x /0x7FFF * gyroMaxDPS_ - calibGyro.x;
+    gyroData.y = (float) g_y /0x7FFF * gyroMaxDPS_ - calibGyro.y;
+    gyroData.z = (float) g_z /0x7FFF * gyroMaxDPS_ - calibGyro.z;
+
+    accData.x = (float) a_x /0x7FFF * gyroMaxDPS_;
+    accData.y = (float) a_y /0x7FFF * gyroMaxDPS_;
+    accData.z = (float) a_z /0x7FFF * gyroMaxDPS_;
+}
+
 void Lsm6ds33::pushGyroMaxDPS_()
 {
     unsigned char val = 0; // dps value we want to send
