@@ -17,6 +17,32 @@ PigpioI2c::~PigpioI2c()
     i2cClose(i2cHandle_);
 }
 
+void PigpioI2c::i2cScanner()
+{
+    i2cScanner(1); // standard i2c bus Raspi is 1
+}
+
+void PigpioI2c::i2cScanner(unsigned char i2cBus)
+{
+    RaspiPigpio bus;
+    bus.initialise();
+
+    int i2c_handle;
+    for(int i=1; i<128; i++)
+    {
+        // changed to 7bit address inside of function!
+        i2c_handle = i2cOpen(i2cBus, i, 0); // Last argument must always be zero, i2c flags not currently not defined.
+        if(i2c_handle >= 0)
+        {
+            if(i2cWriteByte(i2c_handle, 0) >= 0)
+            {
+                printf("I2C device at address 0x%02X\n", i);
+                i2cClose(i2c_handle);
+            }
+        }
+    }
+}
+
 void PigpioI2c::initialise()
 {
     char i2cHandle = -1;
