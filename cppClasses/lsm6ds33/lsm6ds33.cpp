@@ -1,6 +1,14 @@
 #include "lsm6ds33.h"
 
 
+void Lsm6ds33::initialise()
+{
+    PigpioI2c::initialise();
+    std::cout << "Gyro and accelerometer found." << std::endl;
+
+    //TODO configurations to sensor
+}
+
 unsigned int Lsm6ds33::setGyroMaxDPS(unsigned int gyroMaxDPS)
 {
     switch (gyroMaxDPS) { // implemented as switch, because vector etc would be overkill.
