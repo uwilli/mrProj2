@@ -4,7 +4,7 @@ Mobile Robotics Projekt 2 Semester 4 FHGR.
 Group Members: Roman Hanselmann, Urban Willi
 
 
-*Troubleshooting*
+## Troubleshooting
 
 Can't lock /var/run/pigpio.pid
 $ sudo rm /var/run/pigpio.pid
