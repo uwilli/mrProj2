@@ -24,7 +24,7 @@
 # Variables
 remotePath="/home/mr/mrProj2/source/"
 execPath="/home/mr/mrProj2/build/"
-execName="temp_dev"
+execName="gyro_dev"
 
 file=$1
 isClass=$2
@@ -53,7 +53,7 @@ else
 	if [ "$extension" == "cmake" ]
 	then
 		scp $localFile pi:$remotePath/CMakeLists.txt # Change name of destination file
-		ssh pi "cd $execPath && cmake ../source && make"
+		ssh pi "cd $execPath && cmake --build . --config Release --target gyro_dev"
 		echo "===========================Runtime=============================="
 		ssh pi "sudo $execPath$execName"
 		exit
