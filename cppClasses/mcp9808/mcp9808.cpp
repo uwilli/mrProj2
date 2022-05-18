@@ -6,7 +6,7 @@ void Mcp9808::initialise()
     PigpioI2c::initialise();
     std::cout << "Temperature sensor found." << std::endl;
 
-    pushConfig();
+    pushConfig_();
 }
 
 float Mcp9808::readTemperature()
@@ -44,7 +44,7 @@ void Mcp9808::printConfig()
     std::cout << "Config recv : " << "0b" << std::bitset<16>{static_cast<unsigned>(data)} << std::endl;
 }
 
-void Mcp9808::pushConfig()
+void Mcp9808::pushConfig_()
 {
     if(i2cWriteWordData(i2cHandle_, configReg_, configRegData_) < 0)
     {
