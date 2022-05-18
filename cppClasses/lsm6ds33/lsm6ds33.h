@@ -22,12 +22,12 @@ private:
 
     // Config
     unsigned int gyroMaxDPS_ = 500; // degrees per second
-    unsigned int gyroFreqMode = 1; // 12.5Hz
-    unsigned int accFreqMode = 1; // 12.5Hz
-    unsigned int accMaxG = 4;
+    unsigned int gyroFreqMode_ = 1; // 12.5Hz
+    unsigned int accFreqMode_ = 1; // 12.5Hz
+    unsigned int accMaxG_ = 4;
 
     // Functions
-    void pushGyroMaxDPS();
+    void pushGyroMaxDPS_();
 
 };
 

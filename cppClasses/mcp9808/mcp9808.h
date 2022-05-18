@@ -27,7 +27,7 @@ private:
     // Config
     wchar_t configRegData_ = 0x00; // Power-up default, alert disabled
 
-    void pushConfig();
+    void pushConfig_();
 };
 
 #endif // MCP9808_H
