@@ -11,18 +11,18 @@ SOURCES += \
     ../cppClasses/mcp9808/mcp9808.cpp \
     ../cppClasses/pigpioI2c/pigpioI2c.cpp \
     ../cppClasses/raspiPigpio/raspiPigpio.cpp \
-    ../cppClasses/vecXYZ/vecxyz.cpp
+    ../cppClasses/vecXYZ/vecXYZ.cpp
 
 HEADERS += \
     ../cppClasses/lsm6ds33/lsm6ds33.h \
     ../cppClasses/mcp9808/mcp9808.h \
     ../cppClasses/pigpioI2c/pigpioI2c.h \
     ../cppClasses/raspiPigpio/raspiPigpio.h \
-    ../cppClasses/vecXYZ/vecxyz.h
+    ../cppClasses/vecXYZ/vecXYZ.h
 
 INCLUDEPATH += \
-    ../cppClasses/vecXYZ \
     ../cppClasses/lsm6ds33 \
     ../cppClasses/mcp9808 \
     ../cppClasses/pigpioI2c \
-    ../cppClasses/raspiPigpio
+    ../cppClasses/raspiPigpio \
+    ../cppClasses/vecXYZ
