@@ -9,7 +9,8 @@ public:
     VecXYZ();
     VecXYZ(const float xi, const float yi, const float zi);
     void print();
-    void it(const unsigned char i);
+    float getValAt(const unsigned char i);
+    void setValAt(const unsigned char i, const float val);
     float x = 0;
     float y = 0;
     float z = 0;
