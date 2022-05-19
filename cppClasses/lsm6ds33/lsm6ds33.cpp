@@ -127,6 +127,7 @@ void Lsm6ds33::setAccFreqMode(const unsigned char accFreqMode)
  */
 void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
 {
+    // Copy paste code and adapted to optimise speed (instead of calling i2cRead twice for both data sets
     const unsigned char bytes = 12;
     char buf[bytes] = {};
     int temp = 0;
@@ -176,10 +177,30 @@ void Lsm6ds33::getGyroData(VecXYZ &gyroData)
     }
 }
 
+/**
+ * @brief Get only acc data
+ * @param accData : parameter to be written to.
+ */
 void Lsm6ds33::getAccData(VecXYZ &accData)
 {
-    VecXYZ discarded;
-    getData(discarded, accData);
+    const unsigned char accReg = dataReg_ + 6;
+    const unsigned char bytes = 6;
+    char buf[bytes] = {};
+    int temp = 0;
+    float temp_float = 0;
+
+    if(i2cReadI2CBlockData(i2cHandle_, accReg, buf, bytes) != bytes)
+    {
+        std::runtime_error("Could not read correct number (if any) of bytes from data register LSM6DS33.");
+    }
+
+    for(int i=0; i<5; i+=2)
+    {
+        // Acceleration
+        temp = (static_cast<unsigned int>(buf[i+1]) << 8) | buf[i];
+        temp_float = (float) temp / 0x7FFF * accMaxG_; // divide by 2^15 (16bit is a 2 complement's), multiply by max value
+        accData.setValAt(i/2, temp_float);
+    }
 }
 
 /**
@@ -189,15 +210,24 @@ void Lsm6ds33::calibrate()
 {
     VecXYZ sum;
     VecXYZ current;
+
     std::cout << "Don't move! Calibrating ... ";
 
-    for(int i=0; i<calibrateCycles_; i++)
+    for(unsigned int i=0; i<calibrateCycles_; i++)
     {
-
-        sum.setValAt()
+        getGyroData(current);
+        for(int i=0; i<3; i++)
+        {
+            sum.setValAt(i, sum.getValAt(i) + current.getValAt(i));
+        }
     }
 
     std::cout << "Done." << std::endl;
+
+    for(int i=0; i<3; i++)
+    {
+        calibGyro_.setValAt(i, sum.getValAt(i) / calibrateCycles_ + calibGyro_.getValAt(i));
+    }
 }
 
 /**
@@ -346,8 +376,6 @@ void Lsm6ds33::pushAccFreqMode_()
         throw std::runtime_error("Could not write to accelerometer setup register.");
     }
 }
-
-
 
 
 

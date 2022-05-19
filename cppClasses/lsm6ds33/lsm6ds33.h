@@ -42,7 +42,6 @@ private:
     void pushAccMaxG_();
     void pushAccFreqMode_();
 
-
     // Variables
     VecXYZ calibGyro_;
     unsigned int calibrateCycles_ = 50;
