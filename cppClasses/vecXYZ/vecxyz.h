@@ -7,8 +7,9 @@ class VecXYZ
 {
 public:
     VecXYZ();
-    VecXYZ(float xi, float yi, float zi);
+    VecXYZ(const float xi, const float yi, const float zi);
     void print();
+    void it(const unsigned char i);
     float x = 0;
     float y = 0;
     float z = 0;

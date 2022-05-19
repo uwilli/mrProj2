@@ -1,7 +1,7 @@
 #include "vecxyz.h"
 
 
-VecXYZ::VecXYZ(float xi, float yi, float zi)
+VecXYZ::VecXYZ(const float xi, const float yi, const float zi)
 {
     x = xi;
     y = yi;
@@ -14,4 +14,18 @@ void VecXYZ::print()
               << "    y : " << y
               << "    z : " << z
               << std::endl;
+}
+
+float VecXYZ::it(const unsigned char i)
+{
+    switch (i) {
+    case 0:
+        return x;
+    case 1:
+        return y;
+    case 2:
+        return z;
+    default:
+        throw std::out_of_range("VecXYZ has only 3 arguments (0-indexed)");
+    }
 }
