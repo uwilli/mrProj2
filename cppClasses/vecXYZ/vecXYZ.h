@@ -6,7 +6,7 @@
 class VecXYZ
 {
 public:
-    VecXYZ();
+    VecXYZ() {};
     VecXYZ(const float xi, const float yi, const float zi);
     void print();
     float getValAt(const unsigned char i);

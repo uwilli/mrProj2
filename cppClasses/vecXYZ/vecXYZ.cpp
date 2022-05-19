@@ -1,4 +1,4 @@
-#include "vecxyz.h"
+#include "vecXYZ.h"
 
 
 VecXYZ::VecXYZ(const float xi, const float yi, const float zi)

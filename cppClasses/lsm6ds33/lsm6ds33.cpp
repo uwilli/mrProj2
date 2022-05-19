@@ -154,6 +154,7 @@ void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
 
 /**
  * @brief Get only gyro data
+ *        Gyro in DPS (degrees per seconds)
  * @param gyroData : parameter to be written to.
  */
 void Lsm6ds33::getGyroData(VecXYZ &gyroData)
@@ -179,13 +180,14 @@ void Lsm6ds33::getGyroData(VecXYZ &gyroData)
 
 /**
  * @brief Get only acc data
+ *        acceleration in g (9.81m/s^2)
  * @param accData : parameter to be written to.
  */
 void Lsm6ds33::getAccData(VecXYZ &accData)
 {
     const unsigned char accReg = dataReg_ + 6;
     const unsigned char bytes = 6;
-    char buf[bytes] = {};
+    char buf[bytes] = {0, 0, 0, 0, 0, 0};
     int temp = 0;
     float temp_float = 0;
 
@@ -197,7 +199,7 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
     for(int i=0; i<5; i+=2)
     {
         // Acceleration
-        temp = (static_cast<unsigned int>(buf[i+1]) << 8) | buf[i];
+        temp = (static_cast<unsigned int>(buf[i+1]) << 8) | buf[i]; // buf[i] sometimes gives 255. dependant on position -> overflow?
         temp_float = (float) temp / 0x7FFF * accMaxG_; // divide by 2^15 (16bit is a 2 complement's), multiply by max value
         accData.setValAt(i/2, temp_float);
     }
@@ -211,7 +213,8 @@ void Lsm6ds33::calibrate()
     VecXYZ sum;
     VecXYZ current;
 
-    std::cout << "Don't move! Calibrating ... ";
+    std::cout << "Using unistd.h, adapt for ROS!" << std::endl;
+    std::cout << "Don't move! Calibrating ... " << std::flush;
 
     for(unsigned int i=0; i<calibrateCycles_; i++)
     {
@@ -220,9 +223,10 @@ void Lsm6ds33::calibrate()
         {
             sum.setValAt(i, sum.getValAt(i) + current.getValAt(i));
         }
+        usleep(100000); // CHANGE THIS FOR ROS
     }
 
-    std::cout << "Done." << std::endl;
+    std::cout << "Done." << std::flush << std::endl;
 
     for(int i=0; i<3; i++)
     {
@@ -323,16 +327,16 @@ void Lsm6ds33::pushAccMaxG_()
 
     switch (accMaxG_) {
     case 2:
-        val = 0x00;
+        val = 0x00 << 2;
         break;
     case 4:
-        val = 0x08;
+        val = 0x02 << 2;
         break;
     case 8:
-        val = 0x0C;
+        val = 0x03 << 2;
         break;
     case 16:
-        val = 0x04;
+        val = 0x01 << 2;
         break;
     default:
         throw std::invalid_argument("max G has an illegal value. Review setter Method guards.");
@@ -344,10 +348,10 @@ void Lsm6ds33::pushAccMaxG_()
         throw std::runtime_error("Could not read accelerometer setup register.");
     }
 
-    reg &= 0xF3; // set freq bits to zero
+    reg &= 0xF3; // set acc bits to zero
     reg |= val;
 
-    if(i2cWriteByteData(i2cHandle_, gyroSetupReg_, reg) < 0)
+    if(i2cWriteByteData(i2cHandle_, accSetupReg_, reg) < 0)
     {
         throw std::runtime_error("Could not write to accelerometer setup register.");
     }

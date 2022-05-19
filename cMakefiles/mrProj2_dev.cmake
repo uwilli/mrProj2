@@ -26,6 +26,7 @@ target_include_directories(temp_dev
 add_executable(gyro_dev
                 ${PROJECT_SOURCE_DIR}/src/gyro_TestingMain.cpp
                 ${PROJECT_SOURCE_DIR}/src/lsm6ds33.cpp
+                ${PROJECT_SOURCE_DIR}/src/vecXYZ.cpp
                 ${PROJECT_SOURCE_DIR}/src/pigpioI2c.cpp
                 ${PROJECT_SOURCE_DIR}/src/raspiPigpio.cpp
 )
