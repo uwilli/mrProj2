@@ -27,7 +27,7 @@ float Mcp9808::readTemperature()
     return temperature;
 }
 
-void Mcp9808::printTemperature(unsigned char decimalPlaces)
+void Mcp9808::printTemperature(const unsigned char decimalPlaces)
 {
     float temperature = readTemperature();
 

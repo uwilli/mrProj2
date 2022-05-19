@@ -13,10 +13,10 @@ class Lsm6ds33 : public PigpioI2c
 public:
     Lsm6ds33() : PigpioI2c(0x6A) {}; //address for gyro and accelerometer
     void initialise();
-    unsigned int setGyroMaxDPS(unsigned int gyroMaxDPS); // rounds them to nearest possible value and returns chosen one.
-    void setGyroFreqMode(unsigned char gyroFreqMode);
-    unsigned char setAccMaxG(unsigned char accMaxG);
-    void setAccFreqMode(unsigned char accFreqMode);
+    unsigned int setGyroMaxDPS(const unsigned int gyroMaxDPS); // rounds them to nearest possible value and returns chosen one.
+    void setGyroFreqMode(const unsigned char gyroFreqMode);
+    unsigned char setAccMaxG(const unsigned char accMaxG);
+    void setAccFreqMode(const unsigned char accFreqMode);
     void getData(VecXYZ &gyroData, VecXYZ &accData);
 
 private:

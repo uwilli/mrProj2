@@ -1,12 +1,12 @@
 #include "pigpioI2c.h"
 
 
-PigpioI2c::PigpioI2c(unsigned char i2cAddr)
+PigpioI2c::PigpioI2c(const unsigned char i2cAddr)
 {
     i2cAddr_ = i2cAddr;
 }
 
-PigpioI2c::PigpioI2c(unsigned char i2cAddr, unsigned char i2cBus)
+PigpioI2c::PigpioI2c(const unsigned char i2cAddr, const unsigned char i2cBus)
 {
     i2cAddr_ = i2cAddr;
     i2cBus_ = i2cBus;
@@ -22,7 +22,7 @@ void PigpioI2c::i2cScanner()
     i2cScanner(1); // standard i2c bus Raspi is 1
 }
 
-void PigpioI2c::i2cScanner(unsigned char i2cBus)
+void PigpioI2c::i2cScanner(const unsigned char i2cBus)
 {
     RaspiPigpio bus;
     bus.initialise();

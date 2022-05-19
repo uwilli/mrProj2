@@ -12,11 +12,11 @@
 class PigpioI2c : public RaspiPigpio
 {
 public:
-    PigpioI2c(unsigned char i2cAddr);
-    PigpioI2c(unsigned char i2cAddr, unsigned char i2cBus);
+    PigpioI2c(const unsigned char i2cAddr);
+    PigpioI2c(const unsigned char i2cAddr, const unsigned char i2cBus);
     ~PigpioI2c();
     static void i2cScanner();
-    static void i2cScanner(unsigned char i2cBus);
+    static void i2cScanner(const unsigned char i2cBus);
     void initialise(); // already opens I2C communication
     unsigned char getI2cBus();
     unsigned char getI2cAddr();

@@ -21,7 +21,7 @@ void Lsm6ds33::initialise()
  *                                                       	2000 dps
  * @return The value it chose to set the parameter to.
  */
-unsigned int Lsm6ds33::setGyroMaxDPS(unsigned int gyroMaxDPS)
+unsigned int Lsm6ds33::setGyroMaxDPS(const unsigned int gyroMaxDPS)
 {
     switch (gyroMaxDPS) { // implemented as switch, because vector etc would be overkill.
     case 0 ... 187:
@@ -56,7 +56,7 @@ unsigned int Lsm6ds33::setGyroMaxDPS(unsigned int gyroMaxDPS)
  * 												7 --> 833 Hz
  * 												8 --> 1660 Hz
  */
-void Lsm6ds33::setGyroFreqMode(unsigned char gyroFreqMode)
+void Lsm6ds33::setGyroFreqMode(const unsigned char gyroFreqMode)
 {
     if(gyroFreqMode > 8)
     {
@@ -74,7 +74,7 @@ void Lsm6ds33::setGyroFreqMode(unsigned char gyroFreqMode)
  *                                                  16 g
  * @return The value the parameter was actually set to.
  */
-unsigned char Lsm6ds33::setAccMaxG(unsigned char accMaxG)
+unsigned char Lsm6ds33::setAccMaxG(const unsigned char accMaxG)
 {
     switch (accMaxG) { // implemented as switch, because vector etc would be overkill.
     case 0 ... 2:
@@ -108,7 +108,7 @@ unsigned char Lsm6ds33::setAccMaxG(unsigned char accMaxG)
  *                                        9 --> 3330 Hz
  *                                       10 --> 6660 Hz
  */
-void Lsm6ds33::setAccFreqMode(unsigned char accFreqMode)
+void Lsm6ds33::setAccFreqMode(const unsigned char accFreqMode)
 {
     if(accFreqMode > 10)
     {
