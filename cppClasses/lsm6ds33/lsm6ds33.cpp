@@ -141,7 +141,7 @@ void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
     {
         // Gyro
         temp = (static_cast<unsigned int>(buf[i+1]) << 8) | buf[i];
-        temp_float = (float) temp / 0x7FFF * gyroMaxDPS_ - calibGyro.getValAt(i/2); // divide by 2^15 (16bit is a 2 complement's), multiply by max value
+        temp_float = (float) temp / 0x7FFF * gyroMaxDPS_ - calibGyro_.getValAt(i/2); // divide by 2^15 (16bit is a 2 complement's), multiply by max value
         gyroData.setValAt(i/2, temp_float);
 
         // Acceleration
@@ -149,6 +149,77 @@ void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
         temp_float = (float) temp / 0x7FFF * accMaxG_; // divide by 2^15 (16bit is a 2 complement's), multiply by max value
         accData.setValAt(i/2, temp_float);
     }
+}
+
+/**
+ * @brief Get only gyro data
+ * @param gyroData : parameter to be written to.
+ */
+void Lsm6ds33::getGyroData(VecXYZ &gyroData)
+{
+    const unsigned char bytes = 6;
+    char buf[bytes] = {};
+    int temp = 0;
+    float temp_float = 0;
+
+    if(i2cReadI2CBlockData(i2cHandle_, dataReg_, buf, bytes) != bytes)
+    {
+        std::runtime_error("Could not read correct number (if any) of bytes from data register LSM6DS33.");
+    }
+
+    for(int i=0; i<5; i+=2)
+    {
+        // Gyro
+        temp = (static_cast<unsigned int>(buf[i+1]) << 8) | buf[i];
+        temp_float = (float) temp / 0x7FFF * gyroMaxDPS_ - calibGyro_.getValAt(i/2); // divide by 2^15 (16bit is a 2 complement's), multiply by max value
+        gyroData.setValAt(i/2, temp_float);
+    }
+}
+
+void Lsm6ds33::getAccData(VecXYZ &accData)
+{
+    VecXYZ discarded;
+    getData(discarded, accData);
+}
+
+/**
+ * @brief Takes several measurements to calibrate the gyro. DO NOT MOVE DEVICE WHILE CALIBRATING.
+ */
+void Lsm6ds33::calibrate()
+{
+    VecXYZ sum;
+    VecXYZ current;
+    std::cout << "Don't move! Calibrating ... ";
+
+    for(int i=0; i<calibrateCycles_; i++)
+    {
+
+        sum.setValAt()
+    }
+
+    std::cout << "Done." << std::endl;
+}
+
+/**
+ * @brief Takes several measurements to calibrate the gyro. DO NOT MOVE DEVICE WHILE CALIBRATING.
+ * @param cycles : Number of measurements that the average is taken from.
+ */
+void Lsm6ds33::calibrate(const unsigned int cycles)
+{
+    unsigned old = 0;
+    old = calibrateCycles_;
+    calibrateCycles_ = cycles;
+    calibrate();
+    calibrateCycles_ = old;
+}
+
+/**
+ * @brief Set the default number of cycles that are done while calibrating
+ * @param cycles : Number of cycles
+ */
+void Lsm6ds33::setDefaultCalibrateCycles(const unsigned int cycles)
+{
+    calibrateCycles_ = cycles;
 }
 
 void Lsm6ds33::pushGyroMaxDPS_()

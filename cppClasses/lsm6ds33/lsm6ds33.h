@@ -18,6 +18,11 @@ public:
     unsigned char setAccMaxG(const unsigned char accMaxG);
     void setAccFreqMode(const unsigned char accFreqMode);
     void getData(VecXYZ &gyroData, VecXYZ &accData);
+    void getGyroData(VecXYZ &gyroData);
+    void getAccData(VecXYZ &accData);
+    void calibrate();
+    void calibrate(const unsigned int cycles);
+    void setDefaultCalibrateCycles(const unsigned int cycles);
 
 private:
     // Registers
@@ -37,8 +42,10 @@ private:
     void pushAccMaxG_();
     void pushAccFreqMode_();
 
+
     // Variables
-    VecXYZ calibGyro;
+    VecXYZ calibGyro_;
+    unsigned int calibrateCycles_ = 50;
 
 
 };
