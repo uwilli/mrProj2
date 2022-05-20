@@ -220,6 +220,18 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
         temp = (static_cast<unsigned int>(buf[i+1]) << 8) | buf[i]; // buf[i] sometimes gives 255. dependant on position -> overflow?
         temp_float = (float) temp / 0x7FFF * accMaxG_; // divide by 2^15 (16bit is a 2 complement's), multiply by max value
         accData.setValAt(i/2, temp_float);
+
+        // Debugging
+        if(i==0)
+        {
+            std::cout << static_cast<unsigned int>(buf[i+1]) << std::endl;
+            std::cout << (static_cast<unsigned int>(buf[i+1]) << 8) << std::endl;
+            std::cout << static_cast<unsigned int>(buf[i]) << std::endl;
+            std::cout << temp << std::endl;
+            std::cout << (float) temp << std::endl;
+            std::cout << (float) temp / 0x7FFF << std::endl;
+            std::cout << temp_float << std::endl;
+        }
     }
 }
 
