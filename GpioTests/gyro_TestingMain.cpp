@@ -11,19 +11,19 @@ int main()
     Lsm6ds33 sens;
     sens.initialise();
     sleep(1);
-    sens.calibrate();
+    //sens.calibrate();
 
     for(int i=0; i<10; i++)
     {
         sens.getData(gyro, acc);
-        std::cout << "Gyro : ";
-        gyro.print();
-        sens.getGyroData(gyro);
-        std::cout << "Gyro : ";
-        gyro.print();
+        std::cout << std::endl; //"Gyro : ";
+        //gyro.print();
+        //sens.getGyroData(gyro);
+        //std::cout << "Gyro : ";
+        //gyro.print();
         std::cout << "Acc : ";
-        sens.getAccData(acc);
         acc.print();
+        sens.getAccData(acc);
         std::cout << "Acc : ";
         acc.print();
         sleep(1);
