@@ -10,6 +10,7 @@ void Lsm6ds33::initialise()
     pushGyroFreqMode_();
     pushAccMaxG_();
     pushAccFreqMode_();
+    pushAccAntiAliasingMode_();
 }
 
 /**
@@ -116,6 +117,23 @@ void Lsm6ds33::setAccFreqMode(const unsigned char accFreqMode)
     }
     accFreqMode_ = accFreqMode;
     pushAccFreqMode_();
+}
+
+/**
+ * @brief Set aliasing Filter on the Accelerometer.
+ * @param accAntiAliasingMode: possible values : 0 --> 400 Hz
+ *                                               1 --> 200 Hz
+ *                                               2 --> 100 Hz
+ *                                               3 -->  50 Hz
+ */
+void Lsm6ds33::setAccAntiAliasingMode(const unsigned char accAntiAliasingMode)
+{
+    if(accAntiAliasingMode > 3)
+    {
+        throw std::invalid_argument("Maximum Anti-Aliasing Mode is 3 (50Hz). Max Frequency is 400Hz (Mode 0).");
+    }
+    accAntiAliasingMode_ = accAntiAliasingMode;
+    pushAccAntiAliasingMode_();
 }
 
 /**
@@ -374,6 +392,39 @@ void Lsm6ds33::pushAccFreqMode_()
 
     reg &= 0x0F; // set freq bits to zero
     reg |= accFreqMode_ << 4;
+
+    if(i2cWriteByteData(i2cHandle_, accSetupReg_, reg) < 0)
+    {
+        throw std::runtime_error("Could not write to accelerometer setup register.");
+    }
+}
+
+void Lsm6ds33::pushAccAntiAliasingMode_()
+{
+    char reg = 0;
+
+    switch (accAntiAliasingMode_) {
+    case 0:
+        break; // 400Hz
+    case 1:
+        break; // 200Hz
+    case 2:
+        break; // 100Hz
+    case 3:
+        break; // 50Hz
+    default:
+        throw std::invalid_argument("Anti-aliasing mode has an illegal value. Review setter Method guards.");
+    }
+
+    reg = i2cReadByteData(i2cHandle_, accSetupReg_); // Read register from sensor
+    if(reg < 0)
+    {
+        throw std::runtime_error("Could not read accelerometer setup register.");
+    }
+
+    // Anti-aliasing filter to 50 Hz :
+    reg &= 0xFC;
+    reg |= accAntiAliasingMode_;
 
     if(i2cWriteByteData(i2cHandle_, accSetupReg_, reg) < 0)
     {

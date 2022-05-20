@@ -18,6 +18,7 @@ public:
     void setGyroFreqMode(const unsigned char gyroFreqMode);
     unsigned char setAccMaxG(const unsigned char accMaxG);
     void setAccFreqMode(const unsigned char accFreqMode);
+    void setAccAntiAliasingMode(const unsigned char accAntiAliasingMode);
     void getData(VecXYZ &gyroData, VecXYZ &accData);
     void getGyroData(VecXYZ &gyroData);
     void getAccData(VecXYZ &accData);
@@ -36,12 +37,14 @@ private:
     unsigned char gyroFreqMode_ = 1; // 12.5Hz
     unsigned char accFreqMode_ = 1; // 12.5Hz
     unsigned char accMaxG_ = 4;
+    unsigned char accAntiAliasingMode_ = 0; // 400Hz
 
     // Functions
     void pushGyroMaxDPS_();
     void pushGyroFreqMode_();
     void pushAccMaxG_();
     void pushAccFreqMode_();
+    void pushAccAntiAliasingMode_();
 
     // Variables
     VecXYZ calibGyro_;
