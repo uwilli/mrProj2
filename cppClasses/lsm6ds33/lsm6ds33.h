@@ -26,15 +26,19 @@ public:
     void calibrate();
     void calibrate(const unsigned int cycles);
     void setDefaultCalibrateCycles(const unsigned int cycles);
-    float lE2BytesToFloat_(const char* buf, const unsigned int index);
+    void setPollStatReg(const bool pollStatReg);
+    void setStatRegMaxLoops(const int statRegMaxPollingLoops);
 
 private:
     // Registers
     const char gyroSetupReg_ = 0x11;
     const char accSetupReg_ = 0x10;
+    const char statReg_ = 0x1E;
     const char dataReg_ = 0x22; // gyro: 0x22-0x27, acc: 0x28-0x2D
 
     // Config
+    bool pollStatReg_ = 0; // only for debugging, standard = 1
+    int statRegMaxLoops_ = 50; // -1 for infinite polling
     unsigned int gyroMaxDPS_ = 500; // degrees per second
     unsigned char gyroFreqMode_ = 1; // 12.5Hz
     unsigned char accFreqMode_ = 1; // 12.5Hz
@@ -47,13 +51,13 @@ private:
     void pushAccMaxG_();
     void pushAccFreqMode_();
     void pushAccAntiAliasingMode_();
+    float lE2BytesToFloat_(const char* buf, const unsigned int index);
+    void pollStatRegLoop_(const unsigned char whichSens); // 0 = Accelerometer, 1 = Gyro, 3 = Accelerometer & Gyro.
 
 
     // Variables
     VecXYZ calibGyro_;
     unsigned int calibrateCycles_ = 50;
-
-
 };
 
 #endif // LSM6DS33_H

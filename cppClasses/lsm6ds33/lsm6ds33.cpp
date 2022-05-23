@@ -1,6 +1,8 @@
 #include "lsm6ds33.h"
 
-
+/**
+ * @brief Initialises sensor and parent class. IMU does is powered off without initialisation.
+ */
 void Lsm6ds33::initialise()
 {
     PigpioI2c::initialise();
@@ -150,6 +152,11 @@ void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
     char buf[bytes] = {};
     float temp_float = 0;
 
+    if(pollStatReg_)
+    {
+        pollStatRegLoop_(3);
+    }
+
     if(i2cReadI2CBlockData(i2cHandle_, dataReg_, buf, bytes) != bytes)
     {
         std::runtime_error("Could not read correct number (if any) of bytes from data register LSM6DS33.");
@@ -178,6 +185,11 @@ void Lsm6ds33::getGyroData(VecXYZ &gyroData)
     char buf[bytes] = {};
     float temp_float = 0;
 
+    if(pollStatReg_)
+    {
+        pollStatRegLoop_(1);
+    }
+
     if(i2cReadI2CBlockData(i2cHandle_, dataReg_, buf, bytes) != bytes)
     {
         std::runtime_error("Could not read correct number (if any) of bytes from data register LSM6DS33.");
@@ -202,6 +214,11 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
     const unsigned char bytes = 6;
     char buf[bytes] = {};
     float temp_float = 0;
+
+    if(pollStatReg_)
+    {
+        pollStatRegLoop_(0);
+    }
 
     if(i2cReadI2CBlockData(i2cHandle_, accReg, buf, bytes) != bytes)
     {
@@ -265,6 +282,24 @@ void Lsm6ds33::calibrate(const unsigned int cycles)
 void Lsm6ds33::setDefaultCalibrateCycles(const unsigned int cycles)
 {
     calibrateCycles_ = cycles;
+}
+
+/**
+ * @brief Enable status register polling for availability of new values for a maximum of cycles set with setStatRegMaxLoops.
+ * @param pollStatReg set True for polling.
+ */
+void Lsm6ds33::setPollStatReg(const bool pollStatReg)
+{
+    pollStatReg_ = pollStatReg;
+}
+
+/**
+ * @brief Set how many loops are in maximum polled before throwing error. Enable Polling with setPollStatReg.
+ * @param statRegMaxPollingLoops : Maximum number of polling loops. Set to -1 for infinite polling.
+ */
+void Lsm6ds33::setStatRegMaxLoops(const int statRegMaxPollingLoops)
+{
+    statRegMaxLoops_ = statRegMaxPollingLoops;
 }
 
 void Lsm6ds33::pushGyroMaxDPS_()
@@ -442,6 +477,55 @@ float Lsm6ds33::lE2BytesToFloat_(const char* buf, const unsigned int index)
     }
 
     return (float) temp;
+}
+
+/**
+ * @brief Polls status registers until new values are available. Max polling cycles can be set via Config variables.
+ * @param whichSens: possible values : 0 --> Accelerometer
+ *                                     1 --> Gyroscope
+ *                                     3 --> Accelerometer and Gyro
+ */
+void Lsm6ds33::pollStatRegLoop_(const unsigned char whichSens)
+{
+    unsigned char whichBits = 0;
+    char polling = 0;
+    int loops = 0;
+    bool infiniteLoop = false;
+
+    switch (whichSens) {
+    case 0:
+        whichBits = 0x00;
+        break;
+    case 1:
+        whichBits = 0x01;
+        break;
+    case 3:
+        whichBits = 0x03;
+        break;
+    default:
+        throw std::invalid_argument("Either invalid Status register bit or these bits are not yet implemented.");
+    }
+
+    if(statRegMaxLoops_ == -1)
+    {
+        infiniteLoop = true;
+    }
+
+    do
+    {
+        loops++;
+        polling = i2cReadByteData(i2cHandle_, statReg_);
+
+        if(polling < 0)
+        {
+            throw std::runtime_error("Could not read data status register.");
+        }
+
+        if((loops > statRegMaxLoops_) && (infiniteLoop == false))
+        {
+            throw std::runtime_error("Polled status register more than maximum allowed times, check refresh rates.");
+        }
+    } while((polling & whichBits) != whichBits);
 }
 
 
