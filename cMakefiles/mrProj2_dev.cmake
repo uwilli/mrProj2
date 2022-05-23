@@ -38,3 +38,19 @@ target_link_libraries(gyro_dev
 target_include_directories(gyro_dev
                            PUBLIC ${PROJECT_SOURCE_DIR}/inc
 )
+
+# IO-Expander development
+add_executable(ioExp_dev
+                ${PROJECT_SOURCE_DIR}/src/ioExp_TestingMain.cpp
+                ${PROJECT_SOURCE_DIR}/src/pca9554b.cpp
+                ${PROJECT_SOURCE_DIR}/src/pigpioI2c.cpp
+                ${PROJECT_SOURCE_DIR}/src/raspiPigpio.cpp
+)
+
+target_link_libraries(ioExp_dev
+                        pigpio
+)
+
+target_include_directories(ioExp_dev
+                           PUBLIC ${PROJECT_SOURCE_DIR}/inc
+)
