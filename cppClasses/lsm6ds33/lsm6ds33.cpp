@@ -1,7 +1,7 @@
 #include "lsm6ds33.h"
 
 /**
- * @brief Initialises sensor and parent class. IMU does is powered off without initialisation.
+ * @brief Initialises sensor and parent class. IMU is powered off without initialisation.
  */
 void Lsm6ds33::initialise()
 {
