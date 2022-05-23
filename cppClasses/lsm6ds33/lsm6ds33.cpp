@@ -148,7 +148,6 @@ void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
     // Copy paste code and adapted to optimise speed (instead of calling i2cRead twice for both data sets
     const unsigned char bytes = 12;
     char buf[bytes] = {};
-    int temp = 0;
     float temp_float = 0;
 
     if(i2cReadI2CBlockData(i2cHandle_, dataReg_, buf, bytes) != bytes)
@@ -159,13 +158,11 @@ void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
     for(int i=0; i<5; i+=2)
     {
         // Gyro
-        temp = (static_cast<unsigned int>(buf[i+1]) << 8) | buf[i];
-        temp_float = (float) temp / 0x7FFF * gyroMaxDPS_ - calibGyro_.getValAt(i/2); // divide by 2^15 (16bit is a 2 complement's), multiply by max value
+        temp_float = lE2BytesToFloat_(buf, i) / 0x7FFF * gyroMaxDPS_ - calibGyro_.getValAt(i/2); // divide by 2^15 (16bit is a 2 complement's), multiply by max value -> like percent
         gyroData.setValAt(i/2, temp_float);
 
         // Acceleration
-        temp = (static_cast<unsigned int>(buf[i+7]) << 8) | buf[i+6];
-        temp_float = (float) temp / 0x7FFF * accMaxG_; // divide by 2^15 (16bit is a 2 complement's), multiply by max value
+        temp_float = lE2BytesToFloat_(buf, i+6) / 0x7FFF * accMaxG_;
         accData.setValAt(i/2, temp_float);
     }
 }
@@ -179,7 +176,6 @@ void Lsm6ds33::getGyroData(VecXYZ &gyroData)
 {
     const unsigned char bytes = 6;
     char buf[bytes] = {};
-    int temp = 0;
     float temp_float = 0;
 
     if(i2cReadI2CBlockData(i2cHandle_, dataReg_, buf, bytes) != bytes)
@@ -190,8 +186,7 @@ void Lsm6ds33::getGyroData(VecXYZ &gyroData)
     for(int i=0; i<5; i+=2)
     {
         // Gyro
-        temp = (static_cast<unsigned int>(buf[i+1]) << 8) | buf[i];
-        temp_float = (float) temp / 0x7FFF * gyroMaxDPS_ - calibGyro_.getValAt(i/2); // divide by 2^15 (16bit is a 2 complement's), multiply by max value
+        temp_float = lE2BytesToFloat_(buf, i) / 0x7FFF * gyroMaxDPS_ - calibGyro_.getValAt(i/2); // divide by 2^15 (16bit is a 2 complement's), multiply by max value -> like percent
         gyroData.setValAt(i/2, temp_float);
     }
 }
@@ -205,8 +200,7 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
 {
     const unsigned char accReg = dataReg_ + 6;
     const unsigned char bytes = 6;
-    char buf[bytes] = {0, 0, 0, 0, 0, 0};
-    int temp = 0;
+    char buf[bytes] = {};
     float temp_float = 0;
 
     if(i2cReadI2CBlockData(i2cHandle_, accReg, buf, bytes) != bytes)
@@ -217,38 +211,9 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
     for(int i=0; i<5; i+=2)
     {
         // Acceleration
-        temp = static_cast<unsigned int>((buf[i+1] << 8) | buf[i]);
-        temp_float = (float) temp / 0x7FFF * accMaxG_; // divide by 2^15 (16bit is a 2 complement's), multiply by max value
+        temp_float = lE2BytesToFloat_(buf, i) / 0x7FFF * accMaxG_;
         accData.setValAt(i/2, temp_float);
-
-
-        /*
-         * Two's complement is calculated wrong! -> 7g --> negative value.
-         *
-         *
-         *
-         *
-         */
-        // Debugging
-
-        if(i==0)
-        {
-            std::cout << static_cast<unsigned int>((buf[i+1] << 8) | buf[i]) << std::endl;
-            std::cout << static_cast<unsigned int>(buf[i+1]) << std::endl;
-            printf("Printf : %i", buf[i+1]);
-            std::cout << (static_cast<unsigned int>(buf[i+1]) << 8) << std::endl;
-            std::cout << static_cast<unsigned int>(buf[i]) << std::endl;
-            std::cout << temp << std::endl;
-            std::cout << (float) temp << std::endl;
-            std::cout << (float) temp / 0x7FFF << std::endl;
-            std::cout << temp_float << std::endl;
-        }
-
     }
-    /*
-    char test = i2cReadByteData(i2cHandle_, accReg+1);
-    printf("Single byte : %i", test);
-    */
 }
 
 /**
@@ -470,14 +435,10 @@ float Lsm6ds33::lE2BytesToFloat_(const char* buf, const unsigned int index)
 {
     int temp = 0;
     temp = (static_cast<unsigned int>(buf[index+1]) << 8) | buf[index];
-    std::cout << "rawBytes : " << temp << std::endl;
 
     if((temp >>15)  & 0x1) // negative number
     {
-        std::cout << "it's negative" << std::endl;
-
-        temp -= 0xFFFF + 1; // '~val + 1' did not work, 230 -> -230
-        std::cout << temp << std::endl;
+        temp -= 0xFFFF + 1; // '~val + 1' did not work, 230 became -230
     }
 
     return (float) temp;
