@@ -217,7 +217,7 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
     for(int i=0; i<5; i+=2)
     {
         // Acceleration
-        temp = static_cast<int>((static_cast<unsigned int>(buf[i+1]) << 8) | buf[i]); // buf[i] sometimes gives 255. dependant on position -> overflow?
+        temp = static_cast<unsigned int>((buf[i+1] << 8) | buf[i]);
         temp_float = (float) temp / 0x7FFF * accMaxG_; // divide by 2^15 (16bit is a 2 complement's), multiply by max value
         accData.setValAt(i/2, temp_float);
 
@@ -233,6 +233,7 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
 
         if(i==0)
         {
+            std::cout << static_cast<unsigned int>((buf[i+1] << 8) | buf[i]) << std::endl;
             std::cout << static_cast<unsigned int>(buf[i+1]) << std::endl;
             printf("Printf : %i", buf[i+1]);
             std::cout << (static_cast<unsigned int>(buf[i+1]) << 8) << std::endl;
@@ -244,8 +245,10 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
         }
 
     }
+    /*
     char test = i2cReadByteData(i2cHandle_, accReg+1);
     printf("Single byte : %i", test);
+    */
 }
 
 /**
@@ -455,6 +458,29 @@ void Lsm6ds33::pushAccAntiAliasingMode_()
     {
         throw std::runtime_error("Could not write to accelerometer setup register.");
     }
+}
+
+/**
+ * @brief Converts a 2 byte two's complement char string to a float
+ * @param buf : Buffer where char string is stored. Little Endian.
+ * @param index : index = LSB, index+1 = MSB
+ * @return converted value as float
+ */
+float Lsm6ds33::lE2BytesToFloat_(const char* buf, const unsigned int index)
+{
+    int temp = 0;
+    temp = (static_cast<unsigned int>(buf[index+1]) << 8) | buf[index];
+    std::cout << "rawBytes : " << temp << std::endl;
+
+    if((temp >>15)  & 0x1) // negative number
+    {
+        std::cout << "it's negative" << std::endl;
+
+        temp -= 0xFFFF + 1; // '~val + 1' did not work, 230 -> -230
+        std::cout << temp << std::endl;
+    }
+
+    return (float) temp;
 }
 
 

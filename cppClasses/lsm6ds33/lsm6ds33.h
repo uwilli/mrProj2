@@ -8,6 +8,7 @@
 /**
  * @brief The Lsm6ds33 class creates a cpp interface for the gyroscope and magnetic sensor LSM6DS33 for raspberry Pi.
  * @note The i2c interface must be enabled and configured on the raspberry pi.
+ * @author Urban Willi. Adapted from Jan Schuessler, FHGR Mobile Robotics Project 1 semester 3.
  */
 class Lsm6ds33 : public PigpioI2c
 {
@@ -25,6 +26,7 @@ public:
     void calibrate();
     void calibrate(const unsigned int cycles);
     void setDefaultCalibrateCycles(const unsigned int cycles);
+    float lE2BytesToFloat_(const char* buf, const unsigned int index);
 
 private:
     // Registers
@@ -45,6 +47,7 @@ private:
     void pushAccMaxG_();
     void pushAccFreqMode_();
     void pushAccAntiAliasingMode_();
+
 
     // Variables
     VecXYZ calibGyro_;
