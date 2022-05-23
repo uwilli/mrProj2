@@ -11,11 +11,11 @@ void Mcp9808::initialise()
 
 float Mcp9808::readTemperature()
 {
-    int data = 0;
+    unsigned int data = 0;
     int tempVal = 0;
     float temperature = 3000;
 
-    data = i2cReadWordData(i2cHandle_, tempReg_);
+    data = readWordData(tempReg_);
 
     tempVal = ((data << 8) | (data >> 8)) & 0x1FFF;
     if(tempVal > 4095)
@@ -37,17 +37,14 @@ void Mcp9808::printTemperature(const unsigned char decimalPlaces)
 
 void Mcp9808::printConfig()
 {
-    int data;
+    unsigned int data;
 
-    data = i2cReadWordData(i2cHandle_, configReg_);
+    data = readWordData(configReg_);
 
     std::cout << "Config recv : " << "0b" << std::bitset<16>{static_cast<unsigned>(data)} << std::endl;
 }
 
 void Mcp9808::pushConfig_()
 {
-    if(i2cWriteWordData(i2cHandle_, configReg_, configRegData_) < 0)
-    {
-        throw std::runtime_error("Writing to config register of MCP9808 failed.");
-    }
+    writeWordData(configReg_, configRegData_);
 }

@@ -20,6 +20,11 @@ public:
     void initialise(); // already opens I2C communication
     unsigned char getI2cBus();
     unsigned char getI2cAddr();
+    unsigned char readByteData(const unsigned char reg);
+    unsigned int readWordData(const unsigned char reg);
+    void readI2cBlockData(const unsigned char reg, char* buffer, const unsigned int bytes);
+    void writeByteData(const unsigned char reg, const unsigned char byte);
+    void writeWordData(const unsigned char reg, const unsigned int word);
 
 protected:
     unsigned char i2cBus_ = 1;

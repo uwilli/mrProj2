@@ -8,6 +8,7 @@
 /**
  * @brief The Mcp9808 class creates a cpp interface for the temperature sensor mcp9808 for raspberry Pi.
  * @note The i2c interface must be enabled and configured on the raspberry pi.
+ * @author Urban Willi. Adapted from Gion-Pol Catregn, FHGR mobile robotics project 1 semester 3.
  */
 class Mcp9808 : public PigpioI2c
 {

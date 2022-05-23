@@ -157,10 +157,7 @@ void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
         pollStatRegLoop_(3);
     }
 
-    if(i2cReadI2CBlockData(i2cHandle_, dataReg_, buf, bytes) != bytes)
-    {
-        std::runtime_error("Could not read correct number (if any) of bytes from data register LSM6DS33.");
-    }
+    readI2cBlockData(dataReg_, buf, bytes);
 
     for(int i=0; i<5; i+=2)
     {
@@ -190,10 +187,7 @@ void Lsm6ds33::getGyroData(VecXYZ &gyroData)
         pollStatRegLoop_(1);
     }
 
-    if(i2cReadI2CBlockData(i2cHandle_, dataReg_, buf, bytes) != bytes)
-    {
-        std::runtime_error("Could not read correct number (if any) of bytes from data register LSM6DS33.");
-    }
+    readI2cBlockData(dataReg_, buf, bytes);
 
     for(int i=0; i<5; i+=2)
     {
@@ -220,10 +214,7 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
         pollStatRegLoop_(0);
     }
 
-    if(i2cReadI2CBlockData(i2cHandle_, accReg, buf, bytes) != bytes)
-    {
-        std::runtime_error("Could not read correct number (if any) of bytes from data register LSM6DS33.");
-    }
+    readI2cBlockData(accReg, buf, bytes);
 
     for(int i=0; i<5; i+=2)
     {
@@ -327,19 +318,12 @@ void Lsm6ds33::pushGyroMaxDPS_()
         throw std::invalid_argument("max degrees per second has an illegal value. Review setter Method guards.");
     }
 
-    reg = i2cReadByteData(i2cHandle_, gyroSetupReg_); // Read register from sensor
-    if(reg < 0)
-    {
-        throw std::runtime_error("Could not read gyroscope setup register.");
-    }
+    reg = readByteData(gyroSetupReg_);
 
     reg &= 0xF0; // set DPS bits to zero
     reg |= val;
 
-    if(i2cWriteByteData(i2cHandle_, gyroSetupReg_, reg) < 0)
-    {
-        throw std::runtime_error("Could not write to gyroscope setup register.");
-    }
+    writeByteData(gyroSetupReg_, reg);
 }
 
 void Lsm6ds33::pushGyroFreqMode_()
@@ -351,19 +335,12 @@ void Lsm6ds33::pushGyroFreqMode_()
         throw std::invalid_argument("Gyroscope frequency mode is higher than 8 (max)");
     }
 
-    reg = i2cReadByteData(i2cHandle_, gyroSetupReg_); // Read register from sensor
-    if(reg < 0)
-    {
-        throw std::runtime_error("Could not read gyroscope setup register.");
-    }
+    reg = readByteData(gyroSetupReg_);
 
     reg &= 0x0F; // set freq bits to zero
     reg |= gyroFreqMode_ << 4;
 
-    if(i2cWriteByteData(i2cHandle_, gyroSetupReg_, reg) < 0)
-    {
-        throw std::runtime_error("Could not write to gyroscope setup register.");
-    }
+    writeByteData(gyroSetupReg_, reg);
 }
 
 void Lsm6ds33::pushAccMaxG_()
@@ -388,19 +365,12 @@ void Lsm6ds33::pushAccMaxG_()
         throw std::invalid_argument("max G has an illegal value. Review setter Method guards.");
     }
 
-    reg = i2cReadByteData(i2cHandle_, accSetupReg_); // Read register from sensor
-    if(reg < 0)
-    {
-        throw std::runtime_error("Could not read accelerometer setup register.");
-    }
+    reg = readByteData(accSetupReg_);
 
     reg &= 0xF3; // set acc bits to zero
     reg |= val;
 
-    if(i2cWriteByteData(i2cHandle_, accSetupReg_, reg) < 0)
-    {
-        throw std::runtime_error("Could not write to accelerometer setup register.");
-    }
+    writeByteData(accSetupReg_, reg);
 }
 
 void Lsm6ds33::pushAccFreqMode_()
@@ -412,19 +382,12 @@ void Lsm6ds33::pushAccFreqMode_()
         throw std::invalid_argument("Accelerometer frequency mode is higher than 10 (max)");
     }
 
-    reg = i2cReadByteData(i2cHandle_, accSetupReg_); // Read register from sensor
-    if(reg < 0)
-    {
-        throw std::runtime_error("Could not read accelerometer setup register.");
-    }
+    reg = readByteData(accSetupReg_);
 
     reg &= 0x0F; // set freq bits to zero
     reg |= accFreqMode_ << 4;
 
-    if(i2cWriteByteData(i2cHandle_, accSetupReg_, reg) < 0)
-    {
-        throw std::runtime_error("Could not write to accelerometer setup register.");
-    }
+    writeByteData(accSetupReg_, reg);
 }
 
 void Lsm6ds33::pushAccAntiAliasingMode_()
@@ -444,20 +407,13 @@ void Lsm6ds33::pushAccAntiAliasingMode_()
         throw std::invalid_argument("Anti-aliasing mode has an illegal value. Review setter Method guards.");
     }
 
-    reg = i2cReadByteData(i2cHandle_, accSetupReg_); // Read register from sensor
-    if(reg < 0)
-    {
-        throw std::runtime_error("Could not read accelerometer setup register.");
-    }
+    reg = readByteData(accSetupReg_);
 
     // Anti-aliasing filter to 50 Hz :
     reg &= 0xFC;
     reg |= accAntiAliasingMode_;
 
-    if(i2cWriteByteData(i2cHandle_, accSetupReg_, reg) < 0)
-    {
-        throw std::runtime_error("Could not write to accelerometer setup register.");
-    }
+    writeByteData(accSetupReg_, reg);
 }
 
 /**
@@ -514,12 +470,7 @@ void Lsm6ds33::pollStatRegLoop_(const unsigned char whichSens)
     do
     {
         loops++;
-        polling = i2cReadByteData(i2cHandle_, statReg_);
-
-        if(polling < 0)
-        {
-            throw std::runtime_error("Could not read data status register.");
-        }
+        polling = readByteData(statReg_);
 
         if((loops > statRegMaxLoops_) && (infiniteLoop == false))
         {
