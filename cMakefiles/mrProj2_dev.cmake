@@ -54,3 +54,19 @@ target_link_libraries(ioExp_dev
 target_include_directories(ioExp_dev
                            PUBLIC ${PROJECT_SOURCE_DIR}/inc
 )
+
+# motor development
+add_executable(motor_dev
+                ${PROJECT_SOURCE_DIR}/src/motor_TestingMain.cpp
+                ${PROJECT_SOURCE_DIR}/src/tb6612fng.cpp
+                ${PROJECT_SOURCE_DIR}/src/pigpioPwm.cpp
+                ${PROJECT_SOURCE_DIR}/src/raspiPigpio.cpp
+)
+
+target_link_libraries(motor_dev
+                        pigpio
+)
+
+target_include_directories(motor_dev
+                           PUBLIC ${PROJECT_SOURCE_DIR}/inc
+)
