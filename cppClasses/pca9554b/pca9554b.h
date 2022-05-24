@@ -12,6 +12,16 @@ public:
     Pca9554b() : PigpioI2c(0x20) {}; // address of io-Expander on mrProj1 PCB.
     void initialise();
     void allOff();
+    void setOutput(const unsigned char config);
+    // Motor 4
+    void m4Cw();
+    void m4Ccw();
+    void m4Off();
+    // Leds
+    void ledAll(const bool on);
+    void ledFront(const bool on);
+    void ledRear(const bool on);
+    void ledSet(const unsigned char config);
 
 private:
     // Registers
@@ -21,10 +31,6 @@ private:
 
     // Config
     unsigned char config_ = 0b10100011; // 1 = high impedance input, 0 = output
-
-    // Functions
-    void pushConfig_();
-    void pushOutput_(const unsigned char byte);
 };
 
 #endif // PCA9554B_H
