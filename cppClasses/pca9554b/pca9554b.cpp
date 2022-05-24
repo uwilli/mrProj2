@@ -173,3 +173,18 @@ void Pca9554b::ledSet(const unsigned char config)
 
     writeByteData(outputReg_, output);
 }
+
+/**
+ * @brief Read logic level of button.
+ * @return 1 if pressed, 0 if not pressed.
+ */
+bool Pca9554b::readButton()
+{
+    unsigned char level = 0;
+
+    level = readByteData(inputReg_);
+    level = level >> 7; // Only button is on eighth pin
+    level = !level; // 0 if not pressed
+
+    return level;
+}

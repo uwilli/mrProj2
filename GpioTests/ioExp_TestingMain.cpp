@@ -20,6 +20,7 @@ int main()
     sleep(1);
     exp.ledRear(0);
     sleep(2);
+
     for(int i=0; i<4; i++)
     {
         exp.ledSet(0x01 << i);
@@ -27,9 +28,17 @@ int main()
     }
     exp.ledAll(0);
     sleep(1);
+
     exp.ledAll(1);
     sleep(1);
     exp.ledAll(0);
+
+    for(int i=0; i<200; i++)
+    {
+        std::cout << exp.readButton() << std::endl;
+        usleep(100000);
+    }
+
     sleep(3);
     return 0;
 }

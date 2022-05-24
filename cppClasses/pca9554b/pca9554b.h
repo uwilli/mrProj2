@@ -22,6 +22,8 @@ public:
     void ledFront(const bool on);
     void ledRear(const bool on);
     void ledSet(const unsigned char config);
+    // Button
+    bool readButton();
 
 private:
     // Registers
@@ -30,7 +32,7 @@ private:
     const char outputReg_ = 0x01; // if read, reflects what was written to register, not actual state of pin.
 
     // Config
-    unsigned char config_ = 0b10100011; // 1 = high impedance input, 0 = output
+    const unsigned char config_ = 0b10100011; // 1 = high impedance input, 0 = output
 };
 
 #endif // PCA9554B_H
