@@ -8,7 +8,6 @@ int main()
     PigpioI2c::i2cScanner();
 
     Pca9554b exp;
-    exp.initialise();
 
     exp.allOff();
     sleep(1);

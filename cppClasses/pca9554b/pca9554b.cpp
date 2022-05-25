@@ -3,13 +3,13 @@
 /**
  * @brief Initialises ioExpander and parent class.
  */
-void Pca9554b::initialise()
+Pca9554b::Pca9554b() : PigpioI2c(0x20) // address of io-Expander on mrProj1 PCB.
 {
-    PigpioI2c::initialise();
     std::cout << "IO-Expander found." << std::endl;
 
     writeByteData(configReg_, config_);
 }
+
 
 /**
  * @brief Turn all outputs off. Has no effect on inputs.
@@ -19,6 +19,7 @@ void Pca9554b::allOff()
     writeByteData(outputReg_, 0x00);
 }
 
+
 /**
  * @brief Set output register individually defining all eight values.
  * @param config: Output register to be set to these values. 0 --> P0, 7 --> P7
@@ -27,6 +28,7 @@ void Pca9554b::setOutput(const unsigned char config)
 {
     writeByteData(outputReg_, config);
 }
+
 
 /**
  * @brief Configure motor 4 to turn clockwise. PWM pulse must be set seperately.
@@ -43,6 +45,7 @@ void Pca9554b::m4Cw()
     writeByteData(outputReg_, output);
 }
 
+
 /**
  * @brief Configure motor 4 to turn counter-clockwise. PWM pulse must be set seperately.
  */
@@ -58,6 +61,7 @@ void Pca9554b::m4Ccw()
     writeByteData(outputReg_, output);
 }
 
+
 /**
  * @brief Put motor 4 in high-impedance mode (off).
  */
@@ -71,6 +75,7 @@ void Pca9554b::m4Off()
 
     writeByteData(outputReg_, output);
 }
+
 
 /**
  * @brief Turn all 4 leds off or on.
@@ -94,6 +99,7 @@ void Pca9554b::ledAll(const bool on)
     writeByteData(outputReg_, output);
 }
 
+
 /**
  * @brief Turn front Leds on or off.
  * @param on: true --> on, false --> off
@@ -116,6 +122,7 @@ void Pca9554b::ledFront(const bool on)
     writeByteData(outputReg_, output);
 }
 
+
 /**
  * @brief Turn rear Leds on or off.
  * @param on: true --> on, false --> off
@@ -137,6 +144,7 @@ void Pca9554b::ledRear(const bool on)
 
     writeByteData(outputReg_, output);
 }
+
 
 /**
  * @brief Set configuration individually for all 4 leds.
@@ -173,6 +181,7 @@ void Pca9554b::ledSet(const unsigned char config)
 
     writeByteData(outputReg_, output);
 }
+
 
 /**
  * @brief Read logic level of button.

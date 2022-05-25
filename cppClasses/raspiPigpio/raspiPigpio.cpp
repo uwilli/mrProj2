@@ -4,6 +4,20 @@
 
 int RaspiPigpio::initialised_ = 0;
 
+/**
+ * @brief initialise pigpio library.
+ */
+RaspiPigpio::RaspiPigpio::RaspiPigpio()
+{
+    if(initialised_ < 1)
+    {
+        if(gpioInitialise() < 0)
+        {
+            throw std::runtime_error("Pigpio gpioInitialise() failed.");
+        }
+    }
+    initialised_ ++;
+}
 
 RaspiPigpio::~RaspiPigpio()
 {
@@ -16,20 +30,6 @@ RaspiPigpio::~RaspiPigpio()
     }
 }
 
-/**
- * @brief initialise pigpio library.
- */
-void RaspiPigpio::initialise()
-{
-    if(initialised_ < 1)
-    {
-        if(gpioInitialise() < 0)
-        {
-            throw std::runtime_error("Pigpio gpioInitialise() failed.");
-        }
-    }
-    initialised_ ++;
-}
 
 /**
  * @brief Set mode of gpioPin.
@@ -46,6 +46,7 @@ void RaspiPigpio::pinSetMode(unsigned char bcmPin, unsigned mode)
     }
 }
 
+
 /**
  * @brief Write low or High to pin set to Output mode.
  * @param bcmPin: Gpio concerned, BCM numbering!
@@ -60,6 +61,7 @@ void RaspiPigpio::pinWrite(const unsigned char bcmPin, const bool level)
         throw std::runtime_error("Could not write level to gpio pin");
     }
 }
+
 
 /**
  * @brief Read level of pin set to input
@@ -80,6 +82,7 @@ bool RaspiPigpio::pinRead(const unsigned char bcmPin)
 
     return level;
 }
+
 
 void RaspiPigpio::checkBcmPinValid_(const unsigned char bcmPin)
 {

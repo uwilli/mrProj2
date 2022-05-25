@@ -5,8 +5,6 @@
  */
 void Tb6612fng::initialise()
 {
-    PigpioPwm::initialise();
-
     pinSetMode(pinIn1M3_, PI_OUTPUT);
     pinSetMode(pinIn2M3_, PI_OUTPUT);
 

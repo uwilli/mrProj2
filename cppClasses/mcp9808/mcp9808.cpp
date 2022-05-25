@@ -1,14 +1,18 @@
 #include "mcp9808.h"
 
 
-void Mcp9808::initialise()
+Mcp9808::Mcp9808() : PigpioI2c(0x18) // standard address for sensor when no address pins connected
 {
-    PigpioI2c::initialise();
     std::cout << "Temperature sensor found." << std::endl;
 
     pushConfig_();
 }
 
+
+/**
+ * @brief Read temperature from sensor and return it as a float value in degrees Celsius.
+ * @return temperature in degrees Celsius.
+ */
 float Mcp9808::readTemperature()
 {
     unsigned int data = 0;
@@ -27,6 +31,11 @@ float Mcp9808::readTemperature()
     return temperature;
 }
 
+
+/**
+ * @brief Print temperature to console in degrees Celsius.
+ * @param decimalPlaces: How many decimal places are printed.
+ */
 void Mcp9808::printTemperature(const unsigned char decimalPlaces)
 {
     float temperature = readTemperature();
@@ -35,6 +44,10 @@ void Mcp9808::printTemperature(const unsigned char decimalPlaces)
     fflush(stdout);
 }
 
+
+/**
+ * @brief Print to the console the configuration register of the temperature sensor in binary (16bits)
+ */
 void Mcp9808::printConfig()
 {
     unsigned int data;
@@ -44,6 +57,10 @@ void Mcp9808::printConfig()
     std::cout << "Config recv : " << "0b" << std::bitset<16>{static_cast<unsigned>(data)} << std::endl;
 }
 
+
+/**
+ * @brief Write the configuration register with the data saved in the private variable.
+ */
 void Mcp9808::pushConfig_()
 {
     writeWordData(configReg_, configRegData_);

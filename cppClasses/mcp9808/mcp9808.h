@@ -14,10 +14,9 @@
 class Mcp9808 : public PigpioI2c
 {
 public:
-    Mcp9808() : PigpioI2c(0x18) {}; // standard address for sensor when no address pins connected
+    Mcp9808(); // sets sensor to continuous temperature reading, no alerts.
     Mcp9808(const unsigned char i2cAddr) : PigpioI2c(i2cAddr) {};
     Mcp9808(const unsigned char i2cAddr, const unsigned char i2cBus) : PigpioI2c(i2cAddr, i2cBus) {};
-    void initialise(); // sets sensor to continuous temperature reading, no alerts.
     float readTemperature();
     void printTemperature(const unsigned char decimalPlaces);
     void printConfig();

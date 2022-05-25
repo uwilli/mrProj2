@@ -1,11 +1,11 @@
 #include "lsm6ds33.h"
 
+
 /**
  * @brief Initialises sensor and parent class. IMU is powered off without initialisation.
  */
-void Lsm6ds33::initialise()
+Lsm6ds33::Lsm6ds33() : PigpioI2c(0x6A) //address for gyro and accelerometer
 {
-    PigpioI2c::initialise();
     std::cout << "Gyro and accelerometer found." << std::endl;
 
     pushGyroMaxDPS_();
@@ -14,6 +14,7 @@ void Lsm6ds33::initialise()
     pushAccFreqMode_();
     pushAccAntiAliasingMode_();
 }
+
 
 /**
  * @brief Sets maximum degrees per second parameter on the gyroscope.
@@ -47,6 +48,7 @@ unsigned int Lsm6ds33::setGyroMaxDPS(const unsigned int gyroMaxDPS)
     return gyroMaxDPS_;
 }
 
+
 /**
  * @brief Sets data output frequency of Gyroscope.
  * @param gyroFreqMode: possible values:	0 --> Power Down
@@ -68,6 +70,7 @@ void Lsm6ds33::setGyroFreqMode(const unsigned char gyroFreqMode)
     gyroFreqMode_ = gyroFreqMode;
     pushGyroFreqMode_();
 }
+
 
 /**
  * @brief Sets maximum g-Force parameter of accelerometer.
@@ -97,6 +100,7 @@ unsigned char Lsm6ds33::setAccMaxG(const unsigned char accMaxG)
     return accMaxG_;
 }
 
+
 /**
  * @brief Sets accelerometer data output frequency
  * @param accFreqMode: possible values :  0 --> Power Down
@@ -121,6 +125,7 @@ void Lsm6ds33::setAccFreqMode(const unsigned char accFreqMode)
     pushAccFreqMode_();
 }
 
+
 /**
  * @brief Set aliasing Filter on the Accelerometer.
  * @param accAntiAliasingMode: possible values : 0 --> 400 Hz
@@ -137,6 +142,7 @@ void Lsm6ds33::setAccAntiAliasingMode(const unsigned char accAntiAliasingMode)
     accAntiAliasingMode_ = accAntiAliasingMode;
     pushAccAntiAliasingMode_();
 }
+
 
 /**
  * @brief Get gyro and acceleration data from sensor.
@@ -171,6 +177,7 @@ void Lsm6ds33::getData(VecXYZ &gyroData, VecXYZ &accData)
     }
 }
 
+
 /**
  * @brief Get only gyro data
  *        Gyro in DPS (degrees per seconds)
@@ -196,6 +203,7 @@ void Lsm6ds33::getGyroData(VecXYZ &gyroData)
         gyroData.setValAt(i/2, temp_float);
     }
 }
+
 
 /**
  * @brief Get only acc data
@@ -223,6 +231,7 @@ void Lsm6ds33::getAccData(VecXYZ &accData)
         accData.setValAt(i/2, temp_float);
     }
 }
+
 
 /**
  * @brief Takes several measurements to calibrate the gyro. DO NOT MOVE DEVICE WHILE CALIBRATING.
@@ -253,6 +262,7 @@ void Lsm6ds33::calibrate()
     }
 }
 
+
 /**
  * @brief Takes several measurements to calibrate the gyro. DO NOT MOVE DEVICE WHILE CALIBRATING.
  * @param cycles : Number of measurements that the average is taken from.
@@ -266,6 +276,7 @@ void Lsm6ds33::calibrate(const unsigned int cycles)
     calibrateCycles_ = old;
 }
 
+
 /**
  * @brief Set the default number of cycles that are done while calibrating
  * @param cycles : Number of cycles
@@ -274,6 +285,7 @@ void Lsm6ds33::setDefaultCalibrateCycles(const unsigned int cycles)
 {
     calibrateCycles_ = cycles;
 }
+
 
 /**
  * @brief Enable status register polling for availability of new values for a maximum of cycles set with setStatRegMaxLoops.
@@ -284,6 +296,7 @@ void Lsm6ds33::setPollStatReg(const bool pollStatReg)
     pollStatReg_ = pollStatReg;
 }
 
+
 /**
  * @brief Set how many loops are in maximum polled before throwing error. Enable Polling with setPollStatReg.
  * @param statRegMaxPollingLoops : Maximum number of polling loops. Set to -1 for infinite polling.
@@ -292,6 +305,7 @@ void Lsm6ds33::setStatRegMaxLoops(const int statRegMaxPollingLoops)
 {
     statRegMaxLoops_ = statRegMaxPollingLoops;
 }
+
 
 void Lsm6ds33::pushGyroMaxDPS_()
 {
@@ -326,6 +340,7 @@ void Lsm6ds33::pushGyroMaxDPS_()
     writeByteData(gyroSetupReg_, reg);
 }
 
+
 void Lsm6ds33::pushGyroFreqMode_()
 {
     char reg = 0;
@@ -342,6 +357,7 @@ void Lsm6ds33::pushGyroFreqMode_()
 
     writeByteData(gyroSetupReg_, reg);
 }
+
 
 void Lsm6ds33::pushAccMaxG_()
 {
@@ -373,6 +389,7 @@ void Lsm6ds33::pushAccMaxG_()
     writeByteData(accSetupReg_, reg);
 }
 
+
 void Lsm6ds33::pushAccFreqMode_()
 {
     char reg = 0;
@@ -389,6 +406,7 @@ void Lsm6ds33::pushAccFreqMode_()
 
     writeByteData(accSetupReg_, reg);
 }
+
 
 void Lsm6ds33::pushAccAntiAliasingMode_()
 {
@@ -416,6 +434,7 @@ void Lsm6ds33::pushAccAntiAliasingMode_()
     writeByteData(accSetupReg_, reg);
 }
 
+
 /**
  * @brief Converts a 2 byte two's complement char string to a float
  * @param buf : Buffer where char string is stored. Little Endian.
@@ -434,6 +453,7 @@ float Lsm6ds33::lE2BytesToFloat_(const char* buf, const unsigned int index)
 
     return (float) temp;
 }
+
 
 /**
  * @brief Polls status registers until new values are available. Max polling cycles can be set via Config variables.
@@ -478,38 +498,3 @@ void Lsm6ds33::pollStatRegLoop_(const unsigned char whichSens)
         }
     } while((polling & whichBits) != whichBits);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -3,6 +3,17 @@
 
 #include "pigpioPwm.h"
 
+/* TODO : move initialise to constructor, refactor code so that object refers to 1 motor.
+ *
+ *
+ *
+ */
+
+
+
+
+
+
 /**
  * @brief Motor driver for TB6612FNG installed on mrProj1 FHGR PCB.
  * @note Only motor 3 implemented.

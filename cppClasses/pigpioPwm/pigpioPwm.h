@@ -6,7 +6,6 @@
 class PigpioPwm : public RaspiPigpio
 {
 public:
-    void initialise();
     void hardwarePwm(const unsigned char bcmPin, const unsigned int frequency, const uint32_t dutyCycle);
 };
 

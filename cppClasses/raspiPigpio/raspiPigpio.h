@@ -12,8 +12,8 @@
 class RaspiPigpio
 {
 public:
+    RaspiPigpio();
     ~RaspiPigpio();
-    void initialise();
     void pinSetMode(const unsigned char bcmPin, const unsigned mode);
     void pinWrite(const unsigned char bcmPin, const bool level);
     bool pinRead(const unsigned char bcmPin);

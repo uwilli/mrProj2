@@ -9,7 +9,6 @@ int main()
     PigpioI2c::i2cScanner();
     sleep(1);
     Lsm6ds33 sens;
-    sens.initialise();
 
     sleep(1);
     sens.calibrate();

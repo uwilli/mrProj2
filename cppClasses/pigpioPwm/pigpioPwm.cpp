@@ -1,12 +1,5 @@
 #include "pigpioPwm.h"
 
-/**
- * @brief Initialise pigpio library. Must be called before any other function.
- */
-void PigpioPwm::initialise()
-{
-    RaspiPigpio::initialise();
-}
 
 /**
  * @brief Start Hardware frequency on allowed pins. Set dutycycle to 0 to stop hardware pwm.

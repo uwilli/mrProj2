@@ -17,7 +17,6 @@ public:
     ~PigpioI2c();
     static void i2cScanner();
     static void i2cScanner(const unsigned char i2cBus);
-    void initialise(); // already opens I2C communication
     unsigned char getI2cBus();
     unsigned char getI2cAddr();
     unsigned char readByteData(const unsigned char reg);
@@ -30,6 +29,9 @@ protected:
     unsigned char i2cBus_ = 1;
     unsigned char i2cAddr_ = 0;
     unsigned char i2cHandle_ = 0;
+
+private:
+    void initialise_(); // already opens I2C communication
 };
 
 #endif // PIGPIOI2C_H
