@@ -12,7 +12,7 @@
 
 // Hardware timed on BCM pins 0-31
 // Full hardware BCM 12, 18 channel 0 / BCM 13,19 channel 1
-#define PIN 25 // BCM pin
+#define PIN 13 // BCM pin
 #define MINPULSE 1000
 #define MAXPULSE 2000
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 		}
 		
 		time_sleep(0.01); // 50 Hz needed is made by gpioServo, not sleep
-		//printf("%i", pulse);
+        printf("%i\n", pulse);
 	}
 	
 	gpioServo(PIN, 0);
