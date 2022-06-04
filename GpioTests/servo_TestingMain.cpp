@@ -1,28 +1,27 @@
-#include "tb6612fng.h"
+#include "servo.h"
+#include "pca9554b.h"
 #include "unistd.h" // sleep
 #include "iostream"
 
 int main()
 {
-    Tb6612fng mot;
+    Pca9554b ioExp;
+    ioExp.allOff();
 
-    std::cout << "forward" << std::endl;
-    mot.m3(50);
-    sleep(2);
-    std::cout << "backward" << std::endl;
-    mot.m3(-50);
-    sleep(2);
-    std::cout << "All off" << std::endl;
-    mot.allOff();
-    sleep(2);
-    std::cout << "full power" << std::endl;
-    mot.m3(100);
-    sleep(2);
-    std::cout << "off" << std::endl;
-    mot.m3(0);
-    sleep(2);
-    std::cout << "150" << std::endl;
-    mot.m3(150);
+    Servo stServo(13, true);
 
+    stServo.writeMs(0);
+    sleep(1);
+    stServo.writeMs(3000);
+    sleep(1);
+
+    stServo.writeMs(950);
+
+    sleep(2);
+
+    stServo.writeNeutral();
+
+    std::cout << "set to neutral" << std::endl;
+    sleep(2);
     return 0;
 }

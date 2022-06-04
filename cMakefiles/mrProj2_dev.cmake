@@ -70,3 +70,21 @@ target_link_libraries(motor_dev
 target_include_directories(motor_dev
                            PUBLIC ${PROJECT_SOURCE_DIR}/inc
 )
+
+# servo development
+add_executable(servo_dev
+                ${PROJECT_SOURCE_DIR}/src/servo_TestingMain.cpp
+                ${PROJECT_SOURCE_DIR}/src/servo.cpp
+                ${PROJECT_SOURCE_DIR}/src/pca9554b.cpp
+                ${PROJECT_SOURCE_DIR}/src/pigpioPwm.cpp
+                ${PROJECT_SOURCE_DIR}/src/pigpioI2c.cpp
+                ${PROJECT_SOURCE_DIR}/src/raspiPigpio.cpp
+)
+
+target_link_libraries(servo_dev
+                        pigpio
+)
+
+target_include_directories(servo_dev
+                           PUBLIC ${PROJECT_SOURCE_DIR}/inc
+)

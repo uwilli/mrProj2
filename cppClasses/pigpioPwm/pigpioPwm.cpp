@@ -27,3 +27,26 @@ void PigpioPwm::hardwarePwm(const unsigned char bcmPin, const unsigned int frequ
         }
     }
 }
+
+/**
+ * @brief Start/stop software pwm at 50Hz for servo operation.
+ * @param bcmPin: bcm pins 0-31 are allowed.
+ * @param pulsewidth: 0 to turn off, 500-2500 for operation. Careful, some servos have different end positions. Servos can be damaged if run over mechanical operating range.
+ */
+void PigpioPwm::softwareServo(const unsigned char bcmPin, const unsigned int pulsewidth)
+{
+    int error = 0;
+
+    error = gpioServo(bcmPin, pulsewidth);
+    if(error < 0)
+    {
+        switch (error) {
+        case PI_BAD_USER_GPIO:
+            throw std::invalid_argument("Invalid bcm pin for servo (software pwm).");
+        case PI_BAD_PULSEWIDTH:
+                throw std::invalid_argument("Servo pulsewidth must be between 500 and 2500, or 0 to turn off.");
+        default:
+            throw std::runtime_error("Software PWM for servo failed.");
+        }
+    }
+}
