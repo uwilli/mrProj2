@@ -1,84 +1,105 @@
 #include "tb6612fng.h"
 
-/**
- * @brief Initialise Motor driver. All motors are turned off.
- */
-void Tb6612fng::initialise()
-{
-    pinSetMode(pinIn1M3_, PI_OUTPUT);
-    pinSetMode(pinIn2M3_, PI_OUTPUT);
 
-    allOff();
+/**
+ * @brief Create object for 1 motor. At the moment, only motor 3 implemented.
+ */
+Tb6612fng::Tb6612fng(const unsigned char motorNumber)
+{
+    switch (motorNumber)
+    {
+    case 1:
+        pinIn1_ = 17;
+        pinIn2_ = 27;
+        pinPwm_ = 23; // no Hardware-PWM
+    case 2:
+        pinIn1_ = 18;
+        pinIn2_ = 22;
+        pinPwm_ = 24; // no Hardware-PWM
+    case 3:
+        pinIn1_ = 16;
+        pinIn2_ = 25;
+        pinPwm_ = 12;
+        break;
+    case 4:
+        /* on io-Expander
+        pinIn1_
+        pinIn2_
+        */
+        pinPwm_ = 6; // no Hardware-PWM
+    default:
+        throw std::invalid_argument("Invalid motor number or motor not implemented (currently only motor 3 implemented)");
+    }
+
+    pinSetMode(pinIn1_, PI_OUTPUT);
+    pinSetMode(pinIn2_, PI_OUTPUT);
+
+    pinWrite(pinIn1_, 0);
+    pinWrite(pinIn2_, 0); // High impedance mode
+    hardwarePwm(pinPwm_, freq_, 0);
 }
 
+Tb6612fng::~Tb6612fng()
+{
+    pinWrite(pinIn1_, 0);
+    pinWrite(pinIn2_, 0); // High impedance mode
+    hardwarePwm(pinPwm_, freq_, 0);
+}
+
+
 /**
- * @brief Turn all motors off.
+ * @brief Turn all the motors off. Only motor 3 implemented at the moment.
  */
 void Tb6612fng::allOff()
 {
-    motMode_(0, 0);
+    PigpioPwm manip;
+
+    // motor 3
+    manip.pinWrite(16, 0);
+    manip.pinWrite(25, 0);
+    manip.hardwarePwm(12, 0, 0);
 }
 
-/**
- * @brief Handle motor number 3. (Start, stop, forward, backward)
- * @param percent: Percent of speed, from -100 (full backwards) to 0 (stop) to 100 (full forwards)
- */
-void Tb6612fng::m3(const int percent)
-{
-    if(abs(percent) > 100)
-    {
-        throw std::invalid_argument("Maximum of 100 percent for motor speed.");
-    }
 
-    if(percent >= 0)
+/**
+ * @brief Set a speed for the motor.
+ * @param percent: 0 for high impedance mode, -100 to 100. Positive is counter-clockwise.
+ */
+void Tb6612fng::speed(const int percent)
+{
+    unsigned int speedMultiplier = abs(percent);
+
+    if(percent == 0)
     {
-        motMode_(3, 2);
-        hardwarePwm(pinPwmM3_, freq_, percent*10000);
+        pinWrite(pinIn1_, 0);
+        pinWrite(pinIn2_, 0); // High impedance mode
+    }
+    else if(percent > 0)
+    {
+        pinWrite(pinIn1_, 0);
+        pinWrite(pinIn2_, 1); // CCW
     }
     else
     {
-        motMode_(3, 1);
-        hardwarePwm(pinPwmM3_, freq_, -percent*10000);
+        pinWrite(pinIn1_, 1);
+        pinWrite(pinIn2_, 0); // CW
     }
+
+    if(speedMultiplier > 100)
+    {
+        speedMultiplier = 100;
+    }
+
+    hardwarePwm(pinPwm_, freq_, speedMultiplier*10000); // hardware Pwm function [0, 1M]
 }
+
 
 /**
- * @brief Set motor mode.
- * @param motorNumber: 1-4 individual motors, 0 all motors off. (no other modes than 0).
- * @param mode: 0 --> High Impedance Mode
- *              1 --> Clockwise
- *              2 --> Counter-clockwise
+ * @brief Put motor in high impedance mode.
  */
-void Tb6612fng::motMode_(const unsigned char motorNumber, const unsigned char mode)
+void Tb6612fng::off()
 {
-    switch (motorNumber) {
-    case 0:
-        pinWrite(pinIn1M3_, 0);
-        pinWrite(pinIn2M3_, 0);
-        hardwarePwm(pinPwmM3_, freq_, 0);
-        break;
-    case 3:
-        switch (mode) {
-        case 0:
-            pinWrite(pinIn1M3_, 0);
-            pinWrite(pinIn2M3_, 0);
-            hardwarePwm(pinPwmM3_, freq_, 0);
-            break;
-        case 1:
-            pinWrite(pinIn1M3_, 1);
-            pinWrite(pinIn2M3_, 0);
-            break;
-        case 2:
-            pinWrite(pinIn1M3_, 0);
-            pinWrite(pinIn2M3_, 1);
-            break;
-        default:
-            throw std::invalid_argument("Motor mode higher than 2 does not exist.");
-        }
-        break;
-    default:
-        throw std::invalid_argument("Only motor 3 is currently implemented.");
-    }
+    pinWrite(pinIn1_, 0);
+    pinWrite(pinIn2_, 0); // High impedance mode
+    hardwarePwm(pinPwm_, freq_, 0);
 }
-
-
