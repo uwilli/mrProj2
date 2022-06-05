@@ -18,7 +18,8 @@ SOURCES += \
     ../cppClasses/raspiPigpio/raspiPigpio.cpp \
     ../cppClasses/servo/servo.cpp \
     ../cppClasses/tb6612fng/tb6612fng.cpp \
-    ../cppClasses/vecXYZ/vecXYZ.cpp
+    ../cppClasses/vecXYZ/vecXYZ.cpp \
+    ../rosPackages/steeringServo/src/steeringServo_node.cpp
 
 HEADERS += \
     ../cppClasses/lsm6ds33/lsm6ds33.h \
@@ -29,7 +30,8 @@ HEADERS += \
     ../cppClasses/raspiPigpio/raspiPigpio.h \
     ../cppClasses/servo/servo.h \
     ../cppClasses/tb6612fng/tb6612fng.h \
-    ../cppClasses/vecXYZ/vecXYZ.h
+    ../cppClasses/vecXYZ/vecXYZ.h \
+    ../rosPackages/steeringServo/inc/steeringServo_node.hpp
 
 INCLUDEPATH += \
     ../cppClasses/lsm6ds33 \
@@ -40,4 +42,5 @@ INCLUDEPATH += \
     ../cppClasses/pigpioI2c \
     ../cppClasses/pigpioPwm \
     ../cppClasses/raspiPigpio \
-    ../cppClasses/vecXYZ
+    ../cppClasses/vecXYZ \
+    ../rosPackages/steeringServo/inc
