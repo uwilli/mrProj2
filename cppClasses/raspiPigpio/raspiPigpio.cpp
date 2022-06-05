@@ -1,7 +1,6 @@
 #include "raspiPigpio.h"
 
 
-
 int RaspiPigpio::initialised_ = 0;
 
 /**
@@ -11,10 +10,18 @@ RaspiPigpio::RaspiPigpio::RaspiPigpio()
 {
     if(initialised_ < 1)
     {
+#ifdef DEAMON
+        pi_ = pigpio_start(nullptr, nullptr); //default is localhost, port 8888
+        if(pi_ < 0)
+        {
+            throw std::runtime_error("Could not connect to pigpiod (deamon).");
+        }
+#else
         if(gpioInitialise() < 0)
         {
             throw std::runtime_error("Pigpio gpioInitialise() failed.");
         }
+#endif
     }
     initialised_ ++;
 }
@@ -25,7 +32,11 @@ RaspiPigpio::~RaspiPigpio()
 
     if(initialised_ < 1)
     {
+#ifdef DEAMON
+        pigpio_stop(pi_);
+#else
         gpioTerminate();
+#endif
         initialised_ = 0;
     }
 }
@@ -40,10 +51,15 @@ void RaspiPigpio::pinSetMode(unsigned char bcmPin, unsigned mode)
 {
     checkBcmPinValid_(bcmPin);
 
+#ifdef DEAMON
+    if(set_mode(pi_, bcmPin, mode) < 0)
+#else
     if(gpioSetMode(bcmPin, mode) < 0)
+#endif
     {
         throw std::runtime_error("Could not set mode of gpio pin");
     }
+
 }
 
 
@@ -56,7 +72,11 @@ void RaspiPigpio::pinWrite(const unsigned char bcmPin, const bool level)
 {
     checkBcmPinValid_(bcmPin);
 
+#ifdef DEAMON
+    if(gpio_write(pi_, bcmPin, level) < 0)
+#else
     if(gpioWrite(bcmPin, level) < 0)
+#endif
     {
         throw std::runtime_error("Could not write level to gpio pin");
     }
@@ -74,13 +94,27 @@ bool RaspiPigpio::pinRead(const unsigned char bcmPin)
 
     checkBcmPinValid_(bcmPin);
 
+#ifdef DEAMON
+    level = gpio_read(pi_, bcmPin);
+#else
     level = gpioRead(bcmPin);
+#endif
     if(level < 0)
     {
         throw std::runtime_error("Could not read level of gpio pin");
     }
 
     return level;
+}
+
+
+/**
+ * @brief Get internal handle which pi the pigpio deamon is running on.
+ * @return pi: 0 if DEAMON is undefined, pi_ otherwise.
+ */
+int RaspiPigpio::getPi()
+{
+    return pi_;
 }
 
 

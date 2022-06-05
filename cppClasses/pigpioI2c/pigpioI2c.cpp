@@ -27,7 +27,7 @@ PigpioI2c::PigpioI2c(const unsigned char i2cAddr, const unsigned char i2cBus)
 
 PigpioI2c::~PigpioI2c()
 {
-    i2cClose(i2cHandle_);
+    close_(i2cHandle_);
 }
 
 
@@ -47,22 +47,23 @@ void PigpioI2c::i2cScanner()
 void PigpioI2c::i2cScanner(const unsigned char i2cBus)
 {
     bool noDevice = true;
-    RaspiPigpio bus;
+    RaspiPigpio raspi;
 
     int i2c_handle;
     for(int i=1; i<128; i++)
     {
-        // changed to 7bit address inside of function!
-        i2c_handle = i2cOpen(i2cBus, i, 0); // Last argument must always be zero, i2c flags not currently not defined.
-        if(i2c_handle >= 0)
+        try
         {
-            if(i2cWriteByte(i2c_handle, 0) >= 0)
-            {
-                noDevice = false;
-                printf("I2C device at address 0x%02X\n", i);
-                i2cClose(i2c_handle);
-            }
+            i2c_handle = open_(raspi.getPi(), i2cBus, i);
         }
+        catch (std::runtime_error)
+        {
+            continue;
+        }
+
+        close_(raspi.getPi(), i2c_handle);
+        noDevice = false;
+        printf("I2C device at address 0x%02X\n", i);
     }
 
     if(noDevice)
@@ -179,13 +180,9 @@ void PigpioI2c::writeWordData(const unsigned char reg, const unsigned int word)
  */
 void PigpioI2c::initialise_()
 {
-    char i2cHandle = -1;
+    unsigned char i2cHandle;
 
-    i2cHandle = i2cOpen(i2cBus_, i2cAddr_, 0); // Last argument must always be zero, i2c flags not currently not defined in pigpio.
-    if(i2cHandle < 0)
-    {
-        throw std::runtime_error("Failed to open i2c communication. (i2cOpen() pigpio)");
-    }
+    i2cHandle = open_(i2cAddr_); // Last argument must always be zero, i2c flags not currently not defined in pigpio.
 
     if(i2cWriteByte(i2cHandle, 0) < 0)
     {
@@ -198,6 +195,77 @@ void PigpioI2c::initialise_()
     {
         i2cHandle_ = i2cHandle;
         std::cout << "Device is here and working." << std::endl;
+    }
+}
+
+
+unsigned char PigpioI2c::open_(const unsigned char addr) // changed to 7bit address inside of function!
+{
+    unsigned char handle;
+
+    handle = open_(pi_, i2cBus_, addr);
+
+    return handle;
+}
+
+
+unsigned char PigpioI2c::open_(const int pi, const unsigned char bus, const unsigned char addr)
+{
+    char i2cHandle;
+
+#ifdef DEAMON
+    i2cHandle = i2c_open(pi, bus, addr, 0); // Last argument must always be zero, i2c flags not currently not defined in pigpio.
+#else
+    i2cHandle = i2cOpen(bus, addr, 0); // Last argument must always be zero, i2c flags not currently not defined in pigpio.
+#endif
+    if(i2cHandle < 0)
+    {
+        throw std::runtime_error("Failed to open i2c communication. (i2cOpen() pigpio)");
+    }
+
+    try
+    {
+        writeByte_(pi, i2cHandle, 0);
+    }
+    catch (std::runtime_error)
+    {
+        throw std::runtime_error("No device found at specified i2c-Address.");
+    }
+
+    return i2cHandle;
+}
+
+
+void PigpioI2c::close_(const unsigned char handle)
+{
+    close_(pi_, handle);
+}
+
+
+void PigpioI2c::close_(const int pi, const unsigned char handle)
+{
+#ifdef DEAMON
+    i2c_close(pi, handle);
+#else
+    i2cClose(handle);
+#endif
+}
+
+
+void PigpioI2c::writeByte_(const unsigned char handle, const unsigned char byte)
+{
+    writeByte_(pi_, handle, byte);
+}
+
+void PigpioI2c::writeByte_(const int pi, const unsigned char handle, const unsigned char byte)
+{
+#ifdef DEAMON
+    if(i2c_write_byte(pi, handle, byte) < 0)
+#else
+    if(i2cWriteByte(handle, byte) < 0)
+#endif
+    {
+        throw std::runtime_error("Failed to write byte to i2c device (direct to device, no register address.");
     }
 }
 

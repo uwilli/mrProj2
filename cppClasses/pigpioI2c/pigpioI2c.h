@@ -32,6 +32,12 @@ protected:
 
 private:
     void initialise_(); // already opens I2C communication
+    unsigned char open_(const unsigned char addr);
+    static unsigned char open_(const int pi, const unsigned char bus, const unsigned char addr);
+    void close_(const unsigned char handle);
+    static void close_(const int pi, const unsigned char handle);
+    void writeByte_(const unsigned char handle, const unsigned char byte);
+    static void writeByte_(const int pi, const unsigned char handle, const unsigned char byte);
 };
 
 #endif // PIGPIOI2C_H
