@@ -10,11 +10,11 @@ RaspiPigpio::RaspiPigpio::RaspiPigpio()
 {
     if(initialised_ < 1)
     {
-#ifdef DEAMON
+#ifdef DAEMON
         pi_ = pigpio_start(nullptr, nullptr); //default is localhost, port 8888
         if(pi_ < 0)
         {
-            throw std::runtime_error("Could not connect to pigpiod (deamon).");
+            throw std::runtime_error("Could not connect to pigpiod (DAEMON).");
         }
 #else
         if(gpioInitialise() < 0)
@@ -32,7 +32,7 @@ RaspiPigpio::~RaspiPigpio()
 
     if(initialised_ < 1)
     {
-#ifdef DEAMON
+#ifdef DAEMON
         pigpio_stop(pi_);
 #else
         gpioTerminate();
@@ -51,7 +51,7 @@ void RaspiPigpio::pinSetMode(unsigned char bcmPin, unsigned mode)
 {
     checkBcmPinValid_(bcmPin);
 
-#ifdef DEAMON
+#ifdef DAEMON
     if(set_mode(pi_, bcmPin, mode) < 0)
 #else
     if(gpioSetMode(bcmPin, mode) < 0)
@@ -72,7 +72,7 @@ void RaspiPigpio::pinWrite(const unsigned char bcmPin, const bool level)
 {
     checkBcmPinValid_(bcmPin);
 
-#ifdef DEAMON
+#ifdef DAEMON
     if(gpio_write(pi_, bcmPin, level) < 0)
 #else
     if(gpioWrite(bcmPin, level) < 0)
@@ -94,7 +94,7 @@ bool RaspiPigpio::pinRead(const unsigned char bcmPin)
 
     checkBcmPinValid_(bcmPin);
 
-#ifdef DEAMON
+#ifdef DAEMON
     level = gpio_read(pi_, bcmPin);
 #else
     level = gpioRead(bcmPin);
@@ -109,8 +109,8 @@ bool RaspiPigpio::pinRead(const unsigned char bcmPin)
 
 
 /**
- * @brief Get internal handle which pi the pigpio deamon is running on.
- * @return pi: 0 if DEAMON is undefined, pi_ otherwise.
+ * @brief Get internal handle which pi the pigpio DAEMON is running on.
+ * @return pi: 0 if DAEMON is undefined, pi_ otherwise.
  */
 int RaspiPigpio::getPi()
 {

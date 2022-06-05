@@ -11,7 +11,7 @@ void PigpioPwm::hardwarePwm(const unsigned char bcmPin, const unsigned int frequ
 {
     int error = 0;
 
-#ifdef DEAMON
+#ifdef DAEMON
     error = hardware_PWM(pi_, bcmPin, frequency, dutyCycle);
 #else
     error = gpioHardwarePWM(bcmPin, frequency, dutyCycle);
@@ -23,7 +23,7 @@ void PigpioPwm::hardwarePwm(const unsigned char bcmPin, const unsigned int frequ
         case PI_BAD_GPIO:
             throw std::invalid_argument("BcmPin must be between 0-53");
         case PI_NOT_PERMITTED:
-            throw std::runtime_error("Operation not permitted, hardwarePWM via deamon failed.");
+            throw std::runtime_error("Operation not permitted, hardwarePWM via DAEMON failed.");
         case PI_NOT_HPWM_GPIO:
             throw std::invalid_argument("Only bcm pins 12, 13, 18, 19 have hardware pwm capabilities.");
         case PI_BAD_HPWM_FREQ:
@@ -46,7 +46,7 @@ void PigpioPwm::softwareServo(const unsigned char bcmPin, const unsigned int pul
 {
     int error = 0;
 
-#ifdef DEAMON
+#ifdef DAEMON
     error = set_servo_pulsewidth(pi_, bcmPin, pulsewidth);
 #else
     error = gpioServo(bcmPin, pulsewidth);
@@ -59,7 +59,7 @@ void PigpioPwm::softwareServo(const unsigned char bcmPin, const unsigned int pul
         case PI_BAD_PULSEWIDTH:
             throw std::invalid_argument("Servo pulsewidth must be between 500 and 2500, or 0 to turn off.");
         case PI_NOT_PERMITTED:
-            throw std::runtime_error("Operation not permitted, softwarePwm for servo via deamon failed.");
+            throw std::runtime_error("Operation not permitted, softwarePwm for servo via DAEMON failed.");
         default:
             throw std::runtime_error("Software PWM for servo failed.");
         }

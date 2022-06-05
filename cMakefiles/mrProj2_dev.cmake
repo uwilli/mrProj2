@@ -6,6 +6,9 @@ project(mrProj2
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
+# Run via DAEMON for ability of running multiple programs simultaneously
+add_compile_definitions(DAEMON)
+
 # Temperature sensor development
 add_executable(temp_dev
                 ${PROJECT_SOURCE_DIR}/src/temp_TestingMain.cpp
@@ -16,6 +19,7 @@ add_executable(temp_dev
 
 target_link_libraries(temp_dev
                         pigpio
+                        ${pigpiod_if2_LIBRARY}
 )
 
 target_include_directories(temp_dev
@@ -33,6 +37,7 @@ add_executable(gyro_dev
 
 target_link_libraries(gyro_dev
                         pigpio
+                        ${pigpiod_if2_LIBRARY}
 )
 
 target_include_directories(gyro_dev
@@ -49,6 +54,7 @@ add_executable(ioExp_dev
 
 target_link_libraries(ioExp_dev
                         pigpio
+                        ${pigpiod_if2_LIBRARY}
 )
 
 target_include_directories(ioExp_dev
@@ -65,6 +71,7 @@ add_executable(motor_dev
 
 target_link_libraries(motor_dev
                         pigpio
+                        ${pigpiod_if2_LIBRARY}
 )
 
 target_include_directories(motor_dev
@@ -83,6 +90,7 @@ add_executable(servo_dev
 
 target_link_libraries(servo_dev
                         pigpio
+                        ${pigpiod_if2_LIBRARY}
 )
 
 target_include_directories(servo_dev

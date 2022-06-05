@@ -68,7 +68,7 @@ void PigpioI2c::i2cScanner(const unsigned char i2cBus)
 
     if(noDevice)
     {
-        std::cout << "No i2c-devices found on bus " << i2cBus << "." << std::endl;
+        std::cout << "No i2c-devices found on bus " << static_cast<unsigned int>(i2cBus) << "." << std::endl;
     }
 }
 
@@ -100,9 +100,13 @@ unsigned char PigpioI2c::getI2cAddr()
  */
 unsigned char PigpioI2c::readByteData(const unsigned char reg)
 {
-    char regByte = -1;
+    char regByte;
 
+#ifdef DAEMON
+    regByte = i2c_read_byte_data(pi_, i2cHandle_, reg);
+#else
     regByte = i2cReadByteData(i2cHandle_, reg);
+#endif
 
     if(reg < 0)
     {
@@ -122,7 +126,11 @@ unsigned int PigpioI2c::readWordData(const unsigned char reg)
 {
     int data = 0;
 
+#ifdef DAEMON
+    data = i2c_read_word_data(pi_, i2cHandle_, reg);
+#else
     data = i2cReadWordData(i2cHandle_, reg);
+#endif
     if(data < 0)
     {
         throw std::runtime_error("Could not read word from register in i2c-device.");
@@ -140,7 +148,11 @@ unsigned int PigpioI2c::readWordData(const unsigned char reg)
  */
 void PigpioI2c::readI2cBlockData(const unsigned char reg, char* buffer, const unsigned int bytes)
 {
+#ifdef DAEMON
+    if(i2c_read_i2c_block_data(pi_, i2cHandle_, reg, buffer, bytes) != static_cast<char>(bytes))
+#else
     if(i2cReadI2CBlockData(i2cHandle_, reg, buffer, bytes) != static_cast<char>(bytes))
+#endif
     {
         std::runtime_error("Could not read correct number (if any) of bytes from i2c-register.");
     }
@@ -154,7 +166,11 @@ void PigpioI2c::readI2cBlockData(const unsigned char reg, char* buffer, const un
  */
 void PigpioI2c::writeByteData(const unsigned char reg, const unsigned char byte)
 {
+#ifdef DAEMON
+    if(i2c_write_byte_data(pi_, i2cHandle_, reg, byte) < 0)
+#else
     if(i2cWriteByteData(i2cHandle_, reg, byte) < 0)
+#endif
     {
         throw std::runtime_error("Could not write to register of i2c-device.");
     }
@@ -168,7 +184,11 @@ void PigpioI2c::writeByteData(const unsigned char reg, const unsigned char byte)
  */
 void PigpioI2c::writeWordData(const unsigned char reg, const unsigned int word)
 {
+#ifdef DAEMON
+    if(i2c_write_word_data(pi_, i2cHandle_, reg, word) < 0)
+#else
     if(i2cWriteWordData(i2cHandle_, reg, word) < 0)
+#endif
     {
         throw std::runtime_error("Writing to config register of MCP9808 failed.");
     }
@@ -182,20 +202,21 @@ void PigpioI2c::initialise_()
 {
     unsigned char i2cHandle;
 
-    i2cHandle = open_(i2cAddr_); // Last argument must always be zero, i2c flags not currently not defined in pigpio.
-
-    if(i2cWriteByte(i2cHandle, 0) < 0)
+    try
     {
-        i2cClose(i2cHandle);
+        i2cHandle = open_(i2cAddr_); // Last argument must always be zero, i2c flags not currently not defined in pigpio.
+
+    }
+    catch (std::runtime_error)
+    {
+        close_(i2cHandle);
         printf("No device found at address : 0x%02X\n", i2cAddr_);
         fflush(stdout);
-        throw std::runtime_error("No device found at specified i2c-Address.");
+        throw std::runtime_error("No device found at specified address.");
     }
-    else
-    {
-        i2cHandle_ = i2cHandle;
-        std::cout << "Device is here and working." << std::endl;
-    }
+
+    i2cHandle_ = i2cHandle;
+    std::cout << "Device is here and working." << std::endl;
 }
 
 
@@ -213,7 +234,7 @@ unsigned char PigpioI2c::open_(const int pi, const unsigned char bus, const unsi
 {
     char i2cHandle;
 
-#ifdef DEAMON
+#ifdef DAEMON
     i2cHandle = i2c_open(pi, bus, addr, 0); // Last argument must always be zero, i2c flags not currently not defined in pigpio.
 #else
     i2cHandle = i2cOpen(bus, addr, 0); // Last argument must always be zero, i2c flags not currently not defined in pigpio.
@@ -244,7 +265,7 @@ void PigpioI2c::close_(const unsigned char handle)
 
 void PigpioI2c::close_(const int pi, const unsigned char handle)
 {
-#ifdef DEAMON
+#ifdef DAEMON
     i2c_close(pi, handle);
 #else
     i2cClose(handle);
@@ -259,7 +280,7 @@ void PigpioI2c::writeByte_(const unsigned char handle, const unsigned char byte)
 
 void PigpioI2c::writeByte_(const int pi, const unsigned char handle, const unsigned char byte)
 {
-#ifdef DEAMON
+#ifdef DAEMON
     if(i2c_write_byte(pi, handle, byte) < 0)
 #else
     if(i2cWriteByte(handle, byte) < 0)

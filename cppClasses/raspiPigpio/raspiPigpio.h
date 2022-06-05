@@ -1,9 +1,11 @@
 #ifndef RASPIPIGPIO_H
 #define RASPIPIGPIO_H
 
-//#define DEAMON  // --> defined via .cmake file. Now defined here for recognition by Qt Creator
+#ifndef DAEMON
+#define DAEMON  // --> defined via .cmake file. Now defined here for recognition by Qt Creator
+#endif
 
-#ifdef DEAMON
+#ifdef DAEMON
     #include "pigpiod_if2.h"
 #else
     #include "pigpio.h"
