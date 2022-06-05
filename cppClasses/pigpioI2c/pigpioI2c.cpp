@@ -42,7 +42,7 @@ void PigpioI2c::i2cScanner()
 
 /**
  * @brief Scan for i2c-devices on selected bus on raspberry pi. Print list of found devices.
- * @param i2cBus: target i2c-Bus of raspberry pi.
+ * @param i2cBus: Target i2c-Bus of raspberry pi.
  */
 void PigpioI2c::i2cScanner(const unsigned char i2cBus)
 {
@@ -58,6 +58,7 @@ void PigpioI2c::i2cScanner(const unsigned char i2cBus)
         }
         catch (std::runtime_error)
         {
+            close_(raspi.getPi(), i2c_handle);
             continue;
         }
 
@@ -280,13 +281,25 @@ void PigpioI2c::writeByte_(const unsigned char handle, const unsigned char byte)
 
 void PigpioI2c::writeByte_(const int pi, const unsigned char handle, const unsigned char byte)
 {
+    int error;
+
 #ifdef DAEMON
-    if(i2c_write_byte(pi, handle, byte) < 0)
+    error = i2c_write_byte(pi, handle, byte);
 #else
-    if(i2cWriteByte(handle, byte) < 0)
+    error = i2cWriteByte(handle, byte);
 #endif
+    if(error < 0)
     {
-        throw std::runtime_error("Failed to write byte to i2c device (direct to device, no register address.");
+        switch (error)
+        {
+        case PI_BAD_HANDLE:
+            throw std::runtime_error("Failed to write byte to i2c device, bad i2c handle.");
+        case PI_BAD_PARAM:
+            throw std::runtime_error("Failed to write byte to i2c device, bad paramater.");
+        case PI_I2C_WRITE_FAILED:
+        default:
+            throw std::runtime_error("Failed to write byte to i2c device (direct to device, no register address.");
+        }
     }
 }
 

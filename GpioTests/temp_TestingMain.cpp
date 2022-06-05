@@ -4,6 +4,7 @@
 int main()
 {
     PigpioI2c::i2cScanner();
+
     Mcp9808 sens;
 
     sleep(1);
