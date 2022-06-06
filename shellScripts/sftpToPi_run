@@ -4,6 +4,8 @@
 # Transfer code files via sftp to the Pi and automatically compile/run them. Goal is to automate coding
 # on my local machine and running on the Pi
 #
+# Also simultaneously transfers files to virtual machine ros-mrProj2
+#
 # Added with sudo visudo /etc/sudoers a line :
 # mr	ALL=(root) NOPASSWD: /home/mr/mrProj2/build/*
 #
@@ -23,6 +25,7 @@
 
 # Variables
 remotePath="/home/mr/mrProj2/source/"
+remotePathVM="/home/ros/mrProj2/source/"
 execPath="/home/mr/mrProj2/build/"
 execName="gyro_dev"
 
@@ -44,6 +47,10 @@ then
 	
 	scp $localClassname.h pi:$remotePath/inc
 	scp $localClassname.cpp pi:$remotePath/src
+	
+	# VM
+	scp $localClassname.h ros-vm:$remotePathVM/inc
+	scp $localClassname.cpp ros-vm:$remotePathVM/src
 
 # else run normal program
 else
@@ -57,9 +64,15 @@ else
 		echo "===========================Runtime=============================="
 		ssh pi "sudo $execPath$execName"
 		exit
+		
+		# VM
+		scp $localFile ros-vm:$remotePathVM/CMakeLists.txt # Change name of destination file
 	fi
 	
 	scp $localFile pi:$remotePath/src
+	
+	# VM
+	scp $localFile ros-vm:$remotePathVM/src
 
 	if [ "$extension" == "c" ]
 	then

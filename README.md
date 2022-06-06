@@ -34,6 +34,10 @@ Change back to new target, now it should run without error.
 
 #### Git push permission denied
 	$ ssh-add githubFHGR.txt
+	
+#### Raspi ssh agent not running
+	$ eval `ssh-agent`
+	$ ssh-add githubFHGR.txt
 
 
 
