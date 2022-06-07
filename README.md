@@ -8,7 +8,7 @@ used [github project](https://github.com/joan2937/pigpio/tree/master/util) of jo
 
 ### Correction of his readme:      
 
-create pigpiod.service in /etc/systemd/system
+create pigpiod.service in /etc/systemd/system  
 
     $ sudo cp pigpiod.service /usr/local/bin/  
     $ sudo chmod 744 /usr/local/bin/pigpiod.service  

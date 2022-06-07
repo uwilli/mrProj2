@@ -3,7 +3,6 @@
 
 #include "raspiPigpio.h"
 
-#include <iostream>
 
 /**
  * @brief Implementing pigpio.h c-Library i2c functionality in a cpp class.
