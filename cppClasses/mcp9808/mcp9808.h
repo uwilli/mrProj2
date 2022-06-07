@@ -2,6 +2,10 @@
 #define MCP9808_H
 
 #include "pigpioI2c.h"
+
+// STD
+#include <sstream>
+#include <iomanip>
 #include <bitset>
 
 

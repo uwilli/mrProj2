@@ -64,12 +64,17 @@ void PigpioI2c::i2cScanner(const unsigned char i2cBus)
 
         close_(raspi.getPi(), i2c_handle);
         noDevice = false;
-        printf("I2C device at address 0x%02X\n", i);
+
+        std::stringstream ssHex;
+        ssHex << "I2C device at address 0x" << std::uppercase << std::setfill('0') << std::setw(2) << std::hex << i;
+        raspi.print(ssHex.str(), ROS_INFO);
     }
 
     if(noDevice)
     {
-        std::cout << "No i2c-devices found on bus " << static_cast<unsigned int>(i2cBus) << "." << std::endl;
+        std::stringstream ss;
+        ss << "No i2c-devices found on bus " << static_cast<unsigned int>(i2cBus) << ".";
+        raspi.print(ss.str(), ROS_INFO);
     }
 }
 
@@ -211,13 +216,16 @@ void PigpioI2c::initialise_()
     catch (std::runtime_error)
     {
         close_(i2cHandle);
-        printf("No device found at address : 0x%02X\n", i2cAddr_);
-        fflush(stdout);
+
+        std::stringstream ssHex;
+        ssHex << "No device found at address : 0x" << std::uppercase << std::setfill('0') << std::setw(2) << std::hex << i2cAddr_;
+        print(ssHex.str(), ROS_ERROR);
+
         throw std::runtime_error("No device found at specified address.");
     }
 
     i2cHandle_ = i2cHandle;
-    std::cout << "Device is here and working." << std::endl;
+    print("Device is here and working.", ROS_DEBUG);
 }
 
 

@@ -3,7 +3,12 @@
 
 #include "pigpioI2c.h"
 #include "vecXYZ.h"
-#include "unistd.h"
+
+#ifdef ROS
+    #include <ros/time.h>
+#else
+    #include "unistd.h"
+#endif
 
 /**
  * @brief The Lsm6ds33 class creates a cpp interface for the gyroscope and magnetic sensor LSM6DS33 for raspberry Pi.

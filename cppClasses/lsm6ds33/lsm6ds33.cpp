@@ -6,7 +6,7 @@
  */
 Lsm6ds33::Lsm6ds33() : PigpioI2c(0x6A) //address for gyro and accelerometer
 {
-    std::cout << "Gyro and accelerometer found." << std::endl;
+    print("Gyro and accelerometer found.", ROS_DEBUG);
 
     pushGyroMaxDPS_();
     pushGyroFreqMode_();
@@ -241,8 +241,10 @@ void Lsm6ds33::calibrate()
     VecXYZ sum;
     VecXYZ current;
 
-    std::cout << "Using unistd.h, adapt for ROS!" << std::endl;
-    std::cout << "Don't move! Calibrating ... " << std::flush;
+#ifndef ROS
+    print("Using unistd.h, #define ROS in makefile for using ROS-time", ROS_WARN);
+#endif
+    print("Don't move! Calibrating ... ", ROS_INFO);
 
     for(unsigned int i=0; i<calibrateCycles_; i++)
     {
@@ -251,10 +253,14 @@ void Lsm6ds33::calibrate()
         {
             sum.setValAt(i, sum.getValAt(i) + current.getValAt(i));
         }
-        usleep(100000); // CHANGE THIS FOR ROS
+#ifdef ROS
+        ros::Duration(0.1).sleep();
+#else
+        usleep(100000); // unistd.h
+#endif
     }
 
-    std::cout << "Done." << std::flush << std::endl;
+    print("Done calibrating.", ROS_INFO);
 
     for(int i=0; i<3; i++)
     {

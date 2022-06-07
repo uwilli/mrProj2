@@ -1,9 +1,13 @@
 #ifndef VECXYZ_H
 #define VECXYZ_H
 
-#include <iostream>
+#include "raspiPigpio.h"
 
-class VecXYZ
+// STD
+#include <sstream>
+
+
+class VecXYZ : public RaspiPigpio
 {
 public:
     VecXYZ() {};

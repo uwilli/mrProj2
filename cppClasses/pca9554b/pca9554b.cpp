@@ -5,7 +5,7 @@
  */
 Pca9554b::Pca9554b() : PigpioI2c(0x20) // address of io-Expander on mrProj1 PCB.
 {
-    std::cout << "IO-Expander found." << std::endl;
+    print("IO-Expander found.", ROS_DEBUG);
 
     writeByteData(configReg_, config_);
 }

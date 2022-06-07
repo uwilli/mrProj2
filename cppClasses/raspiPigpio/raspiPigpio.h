@@ -6,7 +6,7 @@
 #endif
 
 #ifndef ROS
-#define ROS  // --> defined via .cmake file. Now defined here for recognition by Qt Creator
+//#define ROS  // --> defined via .cmake file. Now defined here for recognition by Qt Creator
 #endif
 
 #ifdef DAEMON
@@ -16,6 +16,7 @@
 #endif
 
 #ifdef ROS
+    #include <ros/ros.h>
     #include <ros/console.h>
 #else
     #include <iostream>
@@ -43,11 +44,11 @@ protected:
     void checkBcmPinValid_(const unsigned char bcmPin);
     int pi_ = 0; //which raspberry Pi
 
-    const unsigned char ROS_DEBUG = 0;
-    const unsigned char ROS_INFO = 1;
-    const unsigned char ROS_WARN = 2;
-    const unsigned char ROS_ERROR = 3;
-    const unsigned char ROS_FATAL = 4;
+    static const unsigned char ROS_DEBUG = 0;
+    static const unsigned char ROS_INFO = 1;
+    static const unsigned char ROS_WARN = 2;
+    static const unsigned char ROS_ERROR = 3;
+    static const unsigned char ROS_FATAL = 4;
 
 private:
     static int initialised_;

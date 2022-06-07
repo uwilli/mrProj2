@@ -3,7 +3,7 @@
 
 Mcp9808::Mcp9808() : PigpioI2c(0x18) // standard address for sensor when no address pins connected
 {
-    std::cout << "Temperature sensor found." << std::endl;
+    print("Temperature sensor found.", ROS_DEBUG);
 
     pushConfig_();
 }
@@ -54,7 +54,9 @@ void Mcp9808::printConfig()
 
     data = readWordData(configReg_);
 
-    std::cout << "Config recv : " << "0b" << std::bitset<16>{static_cast<unsigned>(data)} << std::endl;
+    std::stringstream ss;
+    ss << "Config recv : " << "0b" << std::bitset<16>{static_cast<unsigned>(data)};
+    print(ss.str(), ROS_INFO);
 }
 
 

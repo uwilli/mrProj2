@@ -10,10 +10,12 @@ VecXYZ::VecXYZ(const float xi, const float yi, const float zi)
 
 void VecXYZ::print()
 {
-    std::cout << "x : " << x
+    std::stringstream ss;
+    ss << "x : " << x
               << "    y : " << y
-              << "    z : " << z
-              << std::endl;
+              << "    z : " << z;
+
+    RaspiPigpio::print(ss.str(), ROS_INFO);
 }
 
 void VecXYZ::setValAt(const unsigned char i, const float val)

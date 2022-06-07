@@ -26,6 +26,7 @@ RaspiPigpio::RaspiPigpio::RaspiPigpio()
     initialised_ ++;
 }
 
+
 RaspiPigpio::~RaspiPigpio()
 {
     initialised_ --;
@@ -39,6 +40,43 @@ RaspiPigpio::~RaspiPigpio()
 #endif
         initialised_ = 0;
     }
+}
+
+/**
+ * @brief Print message to correct ros log level or std::cout if ROS is not defined.
+ * @param msg: String to be printed
+ * @param rosLevel: Possible values: 0 --> Debug    Ignored when ROS not defined
+ *                                   1 --> Info
+ *                                   2 --> Warn
+ *                                   3 --> Error
+ *                                   4 --> Fatal
+ */
+void RaspiPigpio::print(const std::string msg, const unsigned char rosLevel)
+{
+#ifdef ROS
+    switch(rosLevel)
+    {
+    case 0:
+        ROS_DEBUG_STREAM(msg);
+        break;
+    case 1:
+        ROS_INFO_STREAM(msg);
+        break;
+    case 2:
+        ROS_WARN_STREAM(msg);
+        break;
+    case 3:
+        ROS_ERROR_STREAM(msg);
+        break;
+    case 4:
+        ROS_FATAL_STREAM(msg);
+        break;
+    default:
+        throw std::invalid_argument("ROS debug level invalid argument, allowed 0-4");
+    }
+#else
+    std::cout << msg << std::endl;
+#endif
 }
 
 
