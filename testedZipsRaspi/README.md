@@ -6,11 +6,12 @@ It should look like this:
 Workspace > source, build  
 source > CMakeLists.txt, inc, src
 
-Inside build folder, execute:  
-    $ cmake ../source  
-    $ cmake --build . --target <servo_dev>
+Inside build folder, execute:
+
+	$ cmake ../source  
+	$ cmake --build . --target <servo_dev>
   
-  Build files and executables will be in the build folder.
+Build files and executables will be in the build folder.
 
             
             
