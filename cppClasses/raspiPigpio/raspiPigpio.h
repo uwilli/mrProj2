@@ -6,7 +6,7 @@
 #endif
 
 #ifndef ROS
-//#define ROS  // --> defined via .cmake file. Now defined here for recognition by Qt Creator
+#define ROS  // --> defined via .cmake file. Now defined here for recognition by Qt Creator
 #endif
 
 #ifdef DAEMON
