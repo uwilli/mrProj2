@@ -27,7 +27,7 @@
 remotePath="/home/mr/mrProj2/source/"
 remotePathVM="/home/ros/mrProj2/source/"
 execPath="/home/mr/mrProj2/build/"
-execName="gyro_dev"
+execName="servo_dev"
 
 file=$1
 isClass=$2
