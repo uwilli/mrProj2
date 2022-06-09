@@ -38,8 +38,22 @@ Change back to new target, now it should run without error.
 #### Raspi ssh agent not running
 	$ eval `ssh-agent`
 	$ ssh-add githubFHGR.txt
+	
+#### file list file for package <...> is missing final newline (corrupted files)
+1. Verify that the .list files are full of garbage:
+	$ cat /var/lib/dpkg/info/<name-of-package>.list
+2. Remove the corrupt .list file:
+	$ sudo rm /var/lib/dpkg/info/<name-of-package>.list
+3. Run the reinstall for that package (will show a warning, but should reinstall):
+	sudo apt install <name-of-package> --reinstall
+	
+Or `$ sudo apt upgrade`if there are several
 
+If catkin build still unknown:
+	$ sudo apt install python3-catkin-tools python3-osrf-pycommon
 
+Source : [corrupted files](https://askubuntu.com/questions/1106373/files-list-file-for-package-package-is-missing-final-newline)
+Source : [catkin build](https://answers.ros.org/question/353113/catkin-build-in-ubuntu-2004-noetic/)
 
 
 
