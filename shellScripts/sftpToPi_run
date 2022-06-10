@@ -69,6 +69,15 @@ else
 		scp $localFile ros-vm:$remotePathVM/CMakeLists.txt # Change name of destination file
 	fi
 	
+	if [ "$extension" == "py" ] 
+	then
+		scp $localFile pi:$remotePath/python
+		clear
+		echo "===========================Runtime=============================="
+		ssh pi "cd $remotePath && cd python && ./$executable.py"
+		exit
+	fi
+	
 	scp $localFile pi:$remotePath/src
 	
 	# VM
@@ -88,5 +97,5 @@ else
 		#clear
 		#ssh pi "g++ -Wall -Wextra -o $execPath$executable $remoteFile -lpigpio"
 		#ssh pi "sudo $execPath$executable"
-	fi	
+	fi
 fi
