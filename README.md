@@ -55,5 +55,30 @@ If catkin build still unknown:
 Source : [corrupted files](https://askubuntu.com/questions/1106373/files-list-file-for-package-package-is-missing-final-newline)
 Source : [catkin build](https://answers.ros.org/question/353113/catkin-build-in-ubuntu-2004-noetic/)
 
+#### No wifi
+[solution web page](https://tolotra.com/2018/07/22/how-to-solve-no-wireless-interface-found-on-a-raspberry-pi-3/)
 
-
+Now whatever in /etc/wpa_supplicant/wpa_supplicant.conf to:
+	ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+	update_config=1
+	country=MR
+ 	
+	network={
+	ssid="Students"
+	psk="mypass"
+	}
+	
+Change whatever in /etc/network/interfaces to
+	# interfaces(5) file used by ifup(8) and ifdown(8)
+ 
+	# Please note that this file is written to be used with dhcpcd
+	# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+	 
+	# Include files from /etc/network/interfaces.d:
+	source-directory /etc/network/interfaces.d
+ 	
+	mapping wlan0
+	script /root/bin/map_iface
+	mapping wlan1
+	script /root/bin/map_iface
+	source /boot/realtimepi-network.txt
