@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 """
+This script reads the data from the 3d connexion Spacemouse Pro Wireless and prints them to the console.
+Currently only single button presses are considered. The information available would allow concurrent and nested pushes
+to be recognized.
+
 Sources used:
 From jwick1234, github. Link: https://github.com/uwilli/3d-mouse-rpi-python/blob/develop/HelloSpaceNavigator.py
 From johnhw, github. Space Mouse Wireless Windows: https://github.com/johnhw/pyspacenavigator/blob/master/spacenavigator.py
