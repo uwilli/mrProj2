@@ -1,7 +1,11 @@
 #!/usr/bin/python3
-"""From jwick1234, github. Link: https://github.com/uwilli/3d-mouse-rpi-python/blob/develop/HelloSpaceNavigator.py"""
-"""Space Mouse Wireless Windows: https://github.com/johnhw/pyspacenavigator/blob/master/spacenavigator.py"""
-"""Changed and blended and marinated by Urban Willi"""
+"""
+Sources used:
+From jwick1234, github. Link: https://github.com/uwilli/3d-mouse-rpi-python/blob/develop/HelloSpaceNavigator.py
+From johnhw, github. Space Mouse Wireless Windows: https://github.com/johnhw/pyspacenavigator/blob/master/spacenavigator.py
+
+Changed and blended and marinated by Urban Willi
+"""
 
 import usb.core
 import usb.util
@@ -12,29 +16,35 @@ import time
 ######################################################################################################
 
 # returns None if index out of range
-def tryIndex(list, index):
+def tryIndexTwosComp(list, index):
     ret = None
     try:
-        binary = list[index]
+        absVal = list[index]
     except ValueError:
         return ret
-    print('raw: ', binary)
 
-    if binary >> 7 & 0x01: # two's complement
-        binary = ~binary
-        binary = binary + 0x01
-        ret = binary
-    print('converted: ', ret)
+    if absVal > 127: # two's complement
+        ret = ~absVal & 1
+    else:
+        ret = absVal
     return ret
 
 
 # returns -1 if index out of range
-def tryIndexButton(list, index):
+def tryIndexAbsVal(list, index):
     try:
         ret = list[index]
     except ValueError:
         return -1
     return ret
+
+# convert two 8 bit bytes to a signed 16 bit integer
+# from johnhw
+def to_int16(y1, y2):
+    x = (y1) | (y2 << 8)
+    if x >= 32768:
+        x = -(65536 - x)
+    return x
 
 
 ######################################################################################################
@@ -81,17 +91,24 @@ if __name__ == "__main__":
                     break
 
             if msgType == 1:
-                print('Joystick message is: ', usbInt, '   ')
                 if released:
                     print('Joystick released')
                     time.sleep(sleepPeriod)
                     continue
                 print('Joystick')
 
-                print('Right/left: ', tryIndex(usbInt, 1))
-                print('Backward: ', tryIndex(usbInt, 3))
-                print('Down/up: ', tryIndex(usbInt, 5))
-                print('Forward: ', tryIndex(usbInt, 7))
+                x = to_int16(tryIndexAbsVal(usbInt, 1), tryIndexAbsVal(usbInt, 2))
+                y = -1*to_int16(tryIndexAbsVal(usbInt, 3), tryIndexAbsVal(usbInt, 4))
+                z = -1 * to_int16(tryIndexAbsVal(usbInt, 5), tryIndexAbsVal(usbInt, 6))
+                pitch = -1 * to_int16(tryIndexAbsVal(usbInt, 7), tryIndexAbsVal(usbInt, 8))
+                roll = -1 * to_int16(tryIndexAbsVal(usbInt, 9), tryIndexAbsVal(usbInt, 10))
+                yaw = -1 * to_int16(tryIndexAbsVal(usbInt, 11), tryIndexAbsVal(usbInt, 12))
+                print('x     : ', x)
+                print('y     : ', y)
+                print('z     : ', z)
+                print('pitch  : ', pitch)
+                print('roll : ', roll)
+                print('yaw   : ', yaw)
 
             elif msgType == 3:
                 if released:
@@ -101,7 +118,7 @@ if __name__ == "__main__":
                 #print('Button')
 
                 # Position 1
-                val = tryIndexButton(usbInt, 1)
+                val = tryIndexAbsVal(usbInt, 1)
                 if val == 1:
                     print('Menu')
                 elif val == 2:
@@ -114,7 +131,7 @@ if __name__ == "__main__":
                     print('Front')
 
                 # Position 2
-                val = tryIndexButton(usbInt, 2)
+                val = tryIndexAbsVal(usbInt, 2)
                 if val == 1:
                     print('Roll View')
                 elif val == 16:
@@ -127,7 +144,7 @@ if __name__ == "__main__":
                     print('B4')
 
                 # Position 3
-                val = tryIndexButton(usbInt, 3)
+                val = tryIndexAbsVal(usbInt, 3)
                 if val == -1: # out of range
                     time.sleep(sleepPeriod)
                     continue
@@ -139,7 +156,7 @@ if __name__ == "__main__":
                     print('Alt')
 
                 # Position 4
-                val = tryIndexButton(usbInt, 4)
+                val = tryIndexAbsVal(usbInt, 4)
                 if val == -1:  # out of range
                     time.sleep(sleepPeriod)
                     continue
