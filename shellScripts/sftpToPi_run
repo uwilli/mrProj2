@@ -73,8 +73,8 @@ else
 	then
 		scp $localFile pi:$remotePath/python
 		#clear
-		#echo "===========================Runtime=============================="
-		#ssh pi "cd $remotePath && cd python && sudo ./$executable.py"
+		echo "===========================Runtime=============================="
+		ssh pi "cd $remotePath && cd python && ./$executable.py"
 		exit
 	fi
 	

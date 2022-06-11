@@ -82,3 +82,13 @@ Change whatever in /etc/network/interfaces to
 	mapping wlan1
 	script /root/bin/map_iface
 	source /boot/realtimepi-network.txt
+	
+#### Need sudo for usb scripts
+Source and more details: [stackoverflow](https://stackoverflow.com/questions/3738173/why-does-pyusb-libusb-require-root-sudo-permissions-on-linux)
+1. Create a udev rules file in /lib/udev/rules.d/ named 50-YourSoftwareName.rules
+Add the line `$ ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="171b", ATTRS{idProduct}=="2001", MODE="660", GROUP="plugdev"`
+2. If necessary, add user to group: `$ adduser username plugdev`
+3. Force the system to see your changes
+	$ sudo udevadm control --reload
+	$ sudo udevadm trigger
+4. Unplug and replug the usb device
