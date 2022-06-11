@@ -11,6 +11,15 @@ import sys
 from time import gmtime, strftime
 import time
 
+# returns -1 if index out of range
+def tryIndex(list, index):
+    ret = -1
+    try:
+        ret = list.index(index)
+    except ValueError :
+        pass
+    return ret
+
 # Look for Space Mouse
 dev = usb.core.find(idVendor=0x256f, idProduct=0xc652)
 if dev is None:
@@ -20,18 +29,29 @@ else:
 
 #dev.set_configuration() # Apparently automatically chosen config, as this throws an error.
 
-# Try to get interrupt Communication to work
-it = 0
-while True:
+if dev.is_kernel_driver_active(0):
     try:
-        ret = dev.read(0x81, 0x20, 100) # endpoint address, msg length -> wMaxPacketSize, timeout (optional, device default if not set)
-        print('return message is: ', ret, '   ', it)
-    except:
-        pass
-    it = it+1
-    time.sleep(0.01)
+        dev.detach_kernel_driver(0)
+    except usb.core.USBError as e:
+        sys.exit("Could not detach kernel driver from interface 0")
 
-## TODO: Possibility to exit loop!
+# Try to get interrupt Communication to work
+run = True
+while run:
+    try:
+        usbInt = dev.read(0x81, 0x20, 100) # endpoint address, msg length -> wMaxPacketSize, timeout (optional, device default if not set)
+        print('return message is: ', usbInt, '   ')
+
+        for i in usbInt:
+            print(i)
+        if 64 in usbInt: # Escape button
+            run = False
+
+    except usb.core.USBError as er:
+        if er.errno == 110: # Timeout
+            pass
+
+    time.sleep(0.01)
 
 
 cfg = dev.get_active_configuration()
